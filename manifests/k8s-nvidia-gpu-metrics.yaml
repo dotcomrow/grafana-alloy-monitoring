@@ -17,8 +17,8 @@ data:
           remote_write:
             - url: https://prometheus-prod-56-prod-us-east-2.grafana.net/api/prom/push
               basic_auth:
-                username: "{{vault:secret/data/grafana-alloy-monitoring-metrics-username}}"
-                password: "{{vault:secret/data/grafana-alloy-monitoring-metrics-password}}"
+                username: "vault:secret/data/grafana-alloy-monitoring-metrics-username"
+                password: "vault:secret/data/grafana-alloy-monitoring-metrics-password"
 ---
 apiVersion: apps/v1
 kind: Deployment
