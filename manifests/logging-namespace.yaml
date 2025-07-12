@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: logging-and-monitoring
+  labels:
+    app: logging-and-monitoring
+  annotations:
+    field.cattle.io/projectId: local:infrastructure
