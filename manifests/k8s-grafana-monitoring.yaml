@@ -44,23 +44,23 @@ spec:
             url: https://prometheus-prod-56-prod-us-east-2.grafana.net/api/prom/push
             auth:
               type: basic
-              username: "{{METRICS_USERNAME}}"
-              password: "{{METRICS_PASSWORD}}"
+              username: <path:secret/data/grafana-alloy-monitoring-metrics-username#value>
+              password: <path:secret/data/grafana-alloy-monitoring-metrics-password#value>
           - name: grafana-cloud-logs
             type: loki
             url: https://logs-prod-036.grafana.net/loki/api/v1/push
             auth:
               type: basic
-              username: "{{LOGS_USERNAME}}"
-              password: "{{LOGS_PASSWORD}}"
+              username: <path:secret/data/grafana-alloy-monitoring-logs-username#value>
+              password: <path:secret/data/grafana-alloy-monitoring-logs-password#value>
           - name: grafana-cloud-traces
             type: otlp
             url: https://tempo-prod-26-prod-us-east-2.grafana.net
             protocol: grpc
             auth:
               type: basic
-              username: "{{TRACES_USERNAME}}"
-              password: "{{TRACES_PASSWORD}}"
+              username: <path:secret/data/grafana-alloy-monitoring-traces-username#value>
+              password: <path:secret/data/grafana-alloy-monitoring-traces-password#value>
             traces:
               enabled: true
             logs:
@@ -131,7 +131,7 @@ spec:
                           action: drop
             extraEnv:
               - name: GCLOUD_RW_API_KEY
-                value: "{{GCLOUD_RW_API_KEY}}"
+                value: <path:secret/data/grafana-alloy-monitoring-gcloud-rw-api-key#value>
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
@@ -149,8 +149,8 @@ spec:
               url: https://fleet-management-prod-008.grafana.net
               auth:
                 type: basic
-                username: "{{REMOTECONFIG_USERNAME}}"
-                password: "{{REMOTECONFIG_PASSWORD}}"
+                username: <path:secret/data/grafana-alloy-monitoring-remoteconfig-username#value>
+                password: <path:secret/data/grafana-alloy-monitoring-remoteconfig-password#value>
         alloy-singleton:
           enabled: true
           alloy:
@@ -163,7 +163,7 @@ spec:
                 memory: "512Mi"
             extraEnv:
               - name: GCLOUD_RW_API_KEY
-                value: "{{GCLOUD_RW_API_KEY}}"
+                value: <path:secret/data/grafana-alloy-monitoring-gcloud-rw-api-key#value>
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
@@ -181,8 +181,8 @@ spec:
               url: https://fleet-management-prod-008.grafana.net
               auth:
                 type: basic
-                username: "{{REMOTECONFIG_USERNAME}}"
-                password: "{{REMOTECONFIG_PASSWORD}}"
+                username: <path:secret/data/grafana-alloy-monitoring-remoteconfig-username#value>
+                password: <path:secret/data/grafana-alloy-monitoring-remoteconfig-password#value>
         alloy-logs:
           enabled: true
           alloy:
@@ -216,7 +216,7 @@ spec:
                       - "_SYSTEMD_UNIT=networkd-dispatcher.service"
             extraEnv:
               - name: GCLOUD_RW_API_KEY
-                value: "{{GCLOUD_RW_API_KEY}}"
+                value: <path:secret/data/grafana-alloy-monitoring-gcloud-rw-api-key#value>
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
@@ -238,8 +238,8 @@ spec:
               url: https://fleet-management-prod-008.grafana.net
               auth:
                 type: basic
-                username: "{{REMOTECONFIG_USERNAME}}"
-                password: "{{REMOTECONFIG_PASSWORD}}"
+                username: <path:secret/data/grafana-alloy-monitoring-remoteconfig-username#value>
+                password: <path:secret/data/grafana-alloy-monitoring-remoteconfig-password#value>
             volumeMounts:
               - name: journal
                 mountPath: /var/log/journal
@@ -273,7 +273,7 @@ spec:
                 protocol: TCP
             extraEnv:
               - name: GCLOUD_RW_API_KEY
-                value: "{{GCLOUD_RW_API_KEY}}"
+                value: <path:secret/data/grafana-alloy-monitoring-gcloud-rw-api-key#value>
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
