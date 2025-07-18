@@ -44,7 +44,7 @@ spec:
             url: https://prometheus-prod-56-prod-us-east-2.grafana.net/api/prom/push
             auth:
               type: basic
-              username: <vault:secret/data/grafana-alloy-monitoring-metrics-username#value>
+              username: <path:secret/data/grafana-alloy-monitoring-metrics-username#value>
               password: <path:secret/data/grafana-alloy-monitoring-metrics-password#value>
           - name: grafana-cloud-logs
             type: loki
