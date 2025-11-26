@@ -45,7 +45,7 @@ spec:
         - -c
         - |
           set -e
-          if kubectl get secret oo-auth -n openobserve >/dev/null 2>&1; then
+          if kubectl get secret oo-auth -n logging-and-monitoring >/dev/null 2>&1; then
             echo "🔄 openobserve root token already exists in logging-and-monitoring namespace"
           else
             echo "🔁 Copying 'oo-auth' from openobserve → logging-and-monitoring..."
@@ -54,11 +54,6 @@ spec:
               kubectl apply -f -
             echo "✅ Secret copied successfully."
           fi
-      volumes:
-      - name: root-token
-        secret:
-          secretName: vault-root-token
-          optional: false
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
