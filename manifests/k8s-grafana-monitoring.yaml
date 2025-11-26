@@ -20,6 +20,46 @@ subjects:
     name: default
     namespace: logging-and-monitoring
 ---
+# Job to copy OpenObserve root token from openobserve namespace to monitoring namespace
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: copy-openobserve-root-token
+  namespace: openobserve
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    linkerd.io/inject: "disabled"
+spec:
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: "disabled"
+    spec:
+      serviceAccountName: default
+      restartPolicy: OnFailure
+      containers:
+      - name: copy-secret
+        image: alpine/k8s:1.31.4
+        command:
+        - sh
+        - -c
+        - |
+          set -e
+          if kubectl get secret oo-auth -n openobserve >/dev/null 2>&1; then
+            echo "🔄 openobserve root token already exists in logging-and-monitoring namespace"
+          else
+            echo "🔁 Copying 'oo-auth' from openobserve → logging-and-monitoring..."
+            kubectl get secret oo-auth -n openobserve -o yaml | \
+              sed 's/namespace: openobserve/namespace: logging-and-monitoring/' | \
+              kubectl apply -f -
+            echo "✅ Secret copied successfully."
+          fi
+      volumes:
+      - name: root-token
+        secret:
+          secretName: vault-root-token
+          optional: false
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -39,46 +79,35 @@ spec:
         kubeStateMetrics:
           enabled: true
         destinations:
-          - name: grafana-cloud-metrics
-            type: prometheus
-            url: https://prometheus-prod-56-prod-us-east-2.grafana.net/api/prom/push
-            auth:
-              type: basic
-              username: "<path:secret/data/grafana-alloy-monitoring-metrics-username#value>"
-              password: "<path:secret/data/grafana-alloy-monitoring-metrics-password#value>"
-          - name: grafana-cloud-logs
-            type: loki
-            url: https://logs-prod-036.grafana.net/loki/api/v1/push
-            auth:
-              type: basic
-              username: "<path:secret/data/grafana-alloy-monitoring-logs-username#value>"
-              password: "<path:secret/data/grafana-alloy-monitoring-logs-password#value>"
-          - name: grafana-cloud-traces
+          - name: openobserve-otlp
             type: otlp
-            url: https://tempo-prod-26-prod-us-east-2.grafana.net
+            # Send directly to OpenObserve OTLP gRPC listener with header from k8s secret
+            url: openobserve-openobserve-standalone.openobserve.svc.cluster.local:5081
             protocol: grpc
-            auth:
-              type: basic
-              username: "<path:secret/data/grafana-alloy-monitoring-traces-username#value>"
-              password: "<path:secret/data/grafana-alloy-monitoring-traces-password#value>"
+            headers:
+              Authorization: "$(OO_AUTH_HEADER)"
+              organization: default
+              stream-name: default
+            tls:
+              insecure: true
             traces:
               enabled: true
             logs:
-              enabled: false
+              enabled: true
             metrics:
-              enabled: false
+              enabled: true
         clusterMetrics:
           enabled: true
           opencost:
-            enabled: true
-            metricsSource: grafana-cloud-metrics
+            enabled: false
+            metricsSource: openobserve-otlp
             opencost:
               exporter:
                 defaultClusterId: suncoast-systems-k8s-cluster
               prometheus:
-                existingSecretName: grafana-cloud-metrics-grafana-k8s-monitoring
+                existingSecretName: ""
                 external:
-                  url: https://prometheus-prod-56-prod-us-east-2.grafana.net/api/prom
+                  url: ""
           kepler:
             enabled: false
         clusterEvents:
@@ -100,9 +129,7 @@ spec:
             zipkin:
               enabled: true
               port: 9411
-          connectors:
-            grafanaCloudMetrics:
-              enabled: true
+          connectors: {}
         autoInstrumentation:
           enabled: false
         alloy-metrics:
@@ -130,8 +157,11 @@ spec:
                           regex: "POD|pause|"
                           action: drop
             extraEnv:
-              - name: GCLOUD_RW_API_KEY
-                value: "<path:secret/data/grafana-alloy-monitoring-gcloud-rw-api-key#value>"
+              - name: OO_AUTH_HEADER
+                valueFrom:
+                  secretKeyRef:
+                    name: oo-auth
+                    key: OO_AUTH_HEADER
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
@@ -142,15 +172,8 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: metadata.name
-              - name: GCLOUD_FM_COLLECTOR_ID
-                value: grafana-k8s-metrics-$(CLUSTER_NAME)-$(NAMESPACE)-$(POD_NAME)
             remoteConfig:
-              enabled: true
-              url: https://fleet-management-prod-008.grafana.net
-              auth:
-                type: basic
-                username: "<path:secret/data/grafana-alloy-monitoring-remoteconfig-username#value>"
-                password: "<path:secret/data/grafana-alloy-monitoring-remoteconfig-password#value>"
+              enabled: false
         alloy-singleton:
           enabled: true
           alloy:
@@ -162,8 +185,11 @@ spec:
                 cpu: "500m"
                 memory: "512Mi"
             extraEnv:
-              - name: GCLOUD_RW_API_KEY
-                value: "<path:secret/data/grafana-alloy-monitoring-gcloud-rw-api-key#value>"
+              - name: OO_AUTH_HEADER
+                valueFrom:
+                  secretKeyRef:
+                    name: oo-auth
+                    key: OO_AUTH_HEADER
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
@@ -174,15 +200,8 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: metadata.name
-              - name: GCLOUD_FM_COLLECTOR_ID
-                value: grafana-k8s-singleton-$(CLUSTER_NAME)-$(NAMESPACE)-$(POD_NAME)
             remoteConfig:
-              enabled: true
-              url: https://fleet-management-prod-008.grafana.net
-              auth:
-                type: basic
-                username: "<path:secret/data/grafana-alloy-monitoring-remoteconfig-username#value>"
-                password: "<path:secret/data/grafana-alloy-monitoring-remoteconfig-password#value>"
+              enabled: false
         alloy-logs:
           enabled: true
           alloy:
@@ -215,8 +234,11 @@ spec:
                       - "_SYSTEMD_UNIT=containerd.service"
                       - "_SYSTEMD_UNIT=networkd-dispatcher.service"
             extraEnv:
-              - name: GCLOUD_RW_API_KEY
-                value: "<path:secret/data/grafana-alloy-monitoring-gcloud-rw-api-key#value>"
+              - name: OO_AUTH_HEADER
+                valueFrom:
+                  secretKeyRef:
+                    name: oo-auth
+                    key: OO_AUTH_HEADER
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
@@ -231,15 +253,8 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: spec.nodeName
-              - name: GCLOUD_FM_COLLECTOR_ID
-                value: grafana-k8s-monitoring-$(CLUSTER_NAME)-$(NAMESPACE)-alloy-logs-$(NODE_NAME)
             remoteConfig:
-              enabled: true
-              url: https://fleet-management-prod-008.grafana.net
-              auth:
-                type: basic
-                username: "<path:secret/data/grafana-alloy-monitoring-remoteconfig-username#value>"
-                password: "<path:secret/data/grafana-alloy-monitoring-remoteconfig-password#value>"
+              enabled: false
             volumeMounts:
               - name: journal
                 mountPath: /var/log/journal
@@ -272,8 +287,11 @@ spec:
                 targetPort: 9411
                 protocol: TCP
             extraEnv:
-              - name: GCLOUD_RW_API_KEY
-                value: "<path:secret/data/grafana-alloy-monitoring-gcloud-rw-api-key#value>"
+              - name: OO_AUTH_HEADER
+                valueFrom:
+                  secretKeyRef:
+                    name: oo-auth
+                    key: OO_AUTH_HEADER
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
@@ -288,8 +306,6 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: spec.nodeName
-              - name: GCLOUD_FM_COLLECTOR_ID
-                value: grafana-k8s-monitoring-$(CLUSTER_NAME)-$(NAMESPACE)-alloy-receiver-$(NODE_NAME)
             remoteConfig:
               enabled: false
   destination:
