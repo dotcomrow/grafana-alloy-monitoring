@@ -90,7 +90,7 @@ spec:
 
           AUTH_HEADER="$(printf '%s' "${AUTH_B64}" | base64 -d)"
           if [ "${AUTH_HEADER#Basic }" = "${AUTH_HEADER}" ]; then
-            echo "❌ OO_AUTH_HEADER must be a Basic header (e.g., 'Basic base64(user:pass)')" >&2
+            echo "❌ OO_AUTH_HEADER must be Basic (e.g., 'Basic base64(user:pass)')" >&2
             exit 1
           fi
 
@@ -112,10 +112,10 @@ spec:
           type: Opaque
           stringData:
             OO_AUTH_HEADER: "${AUTH_HEADER}"
-            username: "${USERNAME}"
-            password: "${PASSWORD}"
+            OO_AUTH_USERNAME: "${USERNAME}"
+            OO_AUTH_PASSWORD: "${PASSWORD}"
           EOF
-          echo "✅ Secret synced to ${DST_NS} with parsed credentials (if present)."
+          echo "✅ Secret synced to ${DST_NS} with username/password parsed from OO_AUTH_HEADER."
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -138,11 +138,11 @@ spec:
         destinations:
           - name: openobserve-otlp
             type: otlp
-            # Send directly to OpenObserve OTLP HTTP listener with Basic creds from oo-auth secret
+            # Send directly to OpenObserve OTLP HTTP listener with bearer token from oo-auth secret
             url: http://openobserve-openobserve-standalone.openobserve.svc.cluster.local:5080/api/default/default/otlp
             protocol: http
             auth:
-              type: basic
+              type: basic_auth
               usernameFrom: env("OO_AUTH_USERNAME")
               passwordFrom: env("OO_AUTH_PASSWORD")
             extraHeaders:
@@ -226,12 +226,12 @@ spec:
                 valueFrom:
                   secretKeyRef:
                     name: oo-auth
-                    key: username
+                    key: OO_AUTH_USERNAME
               - name: OO_AUTH_PASSWORD
                 valueFrom:
                   secretKeyRef:
                     name: oo-auth
-                    key: password
+                    key: OO_AUTH_PASSWORD
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
@@ -264,12 +264,12 @@ spec:
                 valueFrom:
                   secretKeyRef:
                     name: oo-auth
-                    key: username
+                    key: OO_AUTH_USERNAME
               - name: OO_AUTH_PASSWORD
                 valueFrom:
                   secretKeyRef:
                     name: oo-auth
-                    key: password
+                    key: OO_AUTH_PASSWORD
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
@@ -323,12 +323,12 @@ spec:
                 valueFrom:
                   secretKeyRef:
                     name: oo-auth
-                    key: username
+                    key: OO_AUTH_USERNAME
               - name: OO_AUTH_PASSWORD
                 valueFrom:
                   secretKeyRef:
                     name: oo-auth
-                    key: password
+                    key: OO_AUTH_PASSWORD
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
@@ -386,12 +386,12 @@ spec:
                 valueFrom:
                   secretKeyRef:
                     name: oo-auth
-                    key: username
+                    key: OO_AUTH_USERNAME
               - name: OO_AUTH_PASSWORD
                 valueFrom:
                   secretKeyRef:
                     name: oo-auth
-                    key: password
+                    key: OO_AUTH_PASSWORD
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
