@@ -53,7 +53,7 @@ subjects:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: copy-openobserve-root-token
+  name: copy-openobserve-root-token-basic
   namespace: openobserve
   annotations:
     argocd.argoproj.io/sync-wave: "1"
@@ -115,7 +115,7 @@ spec:
             OO_AUTH_USERNAME: "${USERNAME}"
             OO_AUTH_PASSWORD: "${PASSWORD}"
           EOF
-          echo "✅ Secret synced to ${DST_NS} with username/password parsed from OO_AUTH_HEADER."
+          echo "✅ Secret applied to ${DST_NS} with username/password parsed from OO_AUTH_HEADER."
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
