@@ -20,7 +20,7 @@ data:
                 organization: default
                 stream-name: default
               authorization:
-                type: Basic_auth
+                type: basic_auth
                 # Rendered by init container using oo-auth secret (Basic <base64> without the Basic prefix here)
                 credentials: "__OO_AUTH_CREDENTIALS__"
 ---
