@@ -105,9 +105,9 @@ spec:
         destinations:
           - name: openobserve-otlp
             type: otlp
-            # Send directly to OpenObserve OTLP gRPC listener with header from k8s secret
-            url: openobserve-openobserve-standalone.openobserve.svc.cluster.local:5081
-            protocol: grpc
+            # Send directly to OpenObserve OTLP HTTP listener with bearer token from k8s secret
+            url: http://openobserve-openobserve-standalone.openobserve.svc.cluster.local:5080
+            protocol: http
             auth:
               type: bearerToken
               bearerTokenFrom: env("OO_AUTH_HEADER")
