@@ -20,7 +20,7 @@ data:
                 organization: default
                 stream-name: default
               authorization:
-                type: Basic
+                type: basic_auth
                 credentials_file: /etc/oo-auth/credentials
 ---
 apiVersion: apps/v1
