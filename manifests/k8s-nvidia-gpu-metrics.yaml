@@ -15,10 +15,12 @@ data:
               static_configs:
                 - targets: ['nvidia-dcgm-exporter.nvidia.svc.cluster.local:9400']
           remote_write:
-            - url: https://prometheus-prod-56-prod-us-east-2.grafana.net/api/prom/push
-              basic_auth:
-                username: "<path:secret/data/grafana-alloy-monitoring-metrics-username#value>"
-                password: "<path:secret/data/grafana-alloy-monitoring-metrics-password#value>"
+            - url: http://openobserve-openobserve-standalone.openobserve.svc.cluster.local:5080/api/default/default/prometheus/api/v1/write
+              headers:
+                # Replaced by init container with value from oo-auth secret
+                Authorization: "__OO_AUTH_HEADER__"
+                organization: default
+                stream-name: default
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -35,22 +37,50 @@ spec:
       labels:
         app: grafana-gpu-agent
     spec:
+      initContainers:
+        - name: render-agent-config
+          image: alpine:3.20
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              mkdir -p /etc/agent
+              AUTH_HEADER="$(tr -d '\r\n' < /etc/oo-auth/OO_AUTH_HEADER)"
+              awk -v val="$AUTH_HEADER" '{ gsub(/__OO_AUTH_HEADER__/, val); print }' /etc/agent-src/agent.yaml > /etc/agent/agent.yaml
+          volumeMounts:
+            - name: config-template
+              mountPath: /etc/agent-src
+              readOnly: true
+            - name: oo-auth
+              mountPath: /etc/oo-auth
+              readOnly: true
+            - name: config-final
+              mountPath: /etc/agent
       containers:
-      - name: agent
-        image: grafana/agent:v0.40.3
-        args:
-          - "--config.file=/etc/agent/agent.yaml"
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "250m"
-          limits:
-            memory: "256Mi"
-            cpu: "500m"
-        volumeMounts:
-          - name: config
-            mountPath: /etc/agent
+        - name: agent
+          image: grafana/agent:v0.40.3
+          args:
+            - "--config.file=/etc/agent/agent.yaml"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: config-final
+              mountPath: /etc/agent
       volumes:
-        - name: config
+        - name: config-template
           configMap:
             name: grafana-gpu-agent-config
+        - name: oo-auth
+          secret:
+            secretName: oo-auth
+            items:
+              - key: OO_AUTH_HEADER
+                path: OO_AUTH_HEADER
+        - name: config-final
+          emptyDir: {}
