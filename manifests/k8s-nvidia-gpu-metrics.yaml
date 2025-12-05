@@ -17,10 +17,12 @@ data:
           remote_write:
             - url: http://openobserve-openobserve-standalone.openobserve.svc.cluster.local:5080/api/default/default/prometheus/api/v1/write
               headers:
-                # Replaced by init container with value from oo-auth secret
-                Authorization: "__OO_AUTH_HEADER__"
                 organization: default
                 stream-name: default
+              authorization:
+                type: Basic
+                # Rendered by init container using oo-auth secret (Basic <base64> without the Basic prefix here)
+                credentials: "__OO_AUTH_CREDENTIALS__"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -47,7 +49,9 @@ spec:
               set -e
               mkdir -p /etc/agent
               AUTH_HEADER="$(tr -d '\r\n' < /etc/oo-auth/OO_AUTH_HEADER)"
-              awk -v val="$AUTH_HEADER" '{ gsub(/__OO_AUTH_HEADER__/, val); print }' /etc/agent-src/agent.yaml > /etc/agent/agent.yaml
+              AUTH_CREDENTIALS="${AUTH_HEADER#Basic }"
+              # Render template, swapping in the base64 credentials (without the Basic prefix)
+              awk -v val="$AUTH_CREDENTIALS" '{ gsub(/__OO_AUTH_CREDENTIALS__/, val); print }' /etc/agent-src/agent.yaml > /etc/agent/agent.yaml
           volumeMounts:
             - name: config-template
               mountPath: /etc/agent-src
