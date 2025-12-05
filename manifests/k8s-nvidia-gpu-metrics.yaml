@@ -20,9 +20,8 @@ data:
                 organization: default
                 stream-name: default
               authorization:
-                type: basic_auth
-                # Rendered by init container using oo-auth secret (Basic <base64> without the Basic prefix here)
-                credentials: "__OO_AUTH_CREDENTIALS__"
+                type: Basic
+                credentials_file: /etc/oo-auth/credentials
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -40,27 +39,27 @@ spec:
         app: grafana-gpu-agent
     spec:
       initContainers:
-        - name: render-agent-config
+        - name: prepare-oo-auth
           image: alpine:3.20
           command:
             - /bin/sh
             - -c
             - |
-              set -e
-              mkdir -p /etc/agent
-              AUTH_HEADER="$(tr -d '\r\n' < /etc/oo-auth/OO_AUTH_HEADER)"
-              AUTH_CREDENTIALS="${AUTH_HEADER#Basic }"
-              # Render template, swapping in the base64 credentials (without the Basic prefix)
-              awk -v val="$AUTH_CREDENTIALS" '{ gsub(/__OO_AUTH_CREDENTIALS__/, val); print }' /etc/agent-src/agent.yaml > /etc/agent/agent.yaml
+              set -euo pipefail
+              AUTH_HEADER="$(tr -d '\r\n' < /etc/oo-auth-raw/OO_AUTH_HEADER)"
+              case "$AUTH_HEADER" in
+                "Basic "*) AUTH_CREDENTIALS="${AUTH_HEADER#Basic }" ;;
+                Basic\ *) AUTH_CREDENTIALS="${AUTH_HEADER#Basic }" ;;
+                *) AUTH_CREDENTIALS="$AUTH_HEADER" ;;
+              esac
+              mkdir -p /etc/oo-auth
+              printf "%s" "$AUTH_CREDENTIALS" > /etc/oo-auth/credentials
           volumeMounts:
-            - name: config-template
-              mountPath: /etc/agent-src
+            - name: oo-auth-raw
+              mountPath: /etc/oo-auth-raw
               readOnly: true
-            - name: oo-auth
+            - name: oo-auth-processed
               mountPath: /etc/oo-auth
-              readOnly: true
-            - name: config-final
-              mountPath: /etc/agent
       containers:
         - name: agent
           image: grafana/agent:v0.40.3
@@ -74,17 +73,21 @@ spec:
               memory: "256Mi"
               cpu: "500m"
           volumeMounts:
-            - name: config-final
+            - name: config
               mountPath: /etc/agent
+              readOnly: true
+            - name: oo-auth-processed
+              mountPath: /etc/oo-auth
+              readOnly: true
       volumes:
-        - name: config-template
+        - name: config
           configMap:
             name: grafana-gpu-agent-config
-        - name: oo-auth
+        - name: oo-auth-raw
           secret:
             secretName: oo-auth
             items:
               - key: OO_AUTH_HEADER
                 path: OO_AUTH_HEADER
-        - name: config-final
+        - name: oo-auth-processed
           emptyDir: {}
