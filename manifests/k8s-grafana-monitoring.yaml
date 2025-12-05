@@ -92,6 +92,9 @@ kind: Application
 metadata:
   name: grafana-k8s-monitoring
   namespace: argocd
+  annotations:
+      argocd.argoproj.io/sync-wave: "2"
+      linkerd.io/inject: "disabled"
 spec:
   project: logging-and-monitoring
   source:

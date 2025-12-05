@@ -32,6 +32,9 @@ kind: Deployment
 metadata:
   name: grafana-gpu-agent
   namespace: logging-and-monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    linkerd.io/inject: "disabled"
 spec:
   replicas: 1
   selector:
