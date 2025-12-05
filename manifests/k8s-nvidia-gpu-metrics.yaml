@@ -19,9 +19,9 @@ data:
               headers:
                 organization: default
                 stream-name: default
-              authorization:
-                type: basic_auth
-                credentials_file: /etc/oo-auth/credentials
+              basic_auth:
+                username_file: /etc/oo-auth/username
+                password_file: /etc/oo-auth/password
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -54,6 +54,15 @@ spec:
               esac
               mkdir -p /etc/oo-auth
               printf "%s" "$AUTH_CREDENTIALS" > /etc/oo-auth/credentials
+              USERPASS="$(printf '%s' "$AUTH_CREDENTIALS" | base64 -d 2>/dev/null || true)"
+              USERNAME="${USERPASS%%:*}"
+              PASSWORD="${USERPASS#*:}"
+              if [ -z "$USERPASS" ] || [ "$USERNAME" = "$USERPASS" ]; then
+                echo "OO_AUTH_HEADER is not a valid Basic base64 user:pass" >&2
+                exit 1
+              fi
+              printf "%s" "$USERNAME" > /etc/oo-auth/username
+              printf "%s" "$PASSWORD" > /etc/oo-auth/password
           volumeMounts:
             - name: oo-auth-raw
               mountPath: /etc/oo-auth-raw
