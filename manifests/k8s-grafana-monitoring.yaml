@@ -112,7 +112,7 @@ spec:
           - name: openobserve-otlp
             type: otlp
             # Send directly to OpenObserve OTLP HTTP listener with Authorization header from oo-auth secret
-            url: http://openobserve-openobserve-standalone.openobserve.svc.cluster.local:5080/api/default/otlp
+            url: http://openobserve-openobserve-standalone.openobserve.svc.cluster.local:5080/api/default/default/otlp
             protocol: http
             auth:
               type: none
