@@ -108,8 +108,10 @@ spec:
             # Send directly to OpenObserve OTLP gRPC listener with header from k8s secret
             url: openobserve-openobserve-standalone.openobserve.svc.cluster.local:5081
             protocol: grpc
-            headers:
-              Authorization: "${OO_AUTH_HEADER}"
+            auth:
+              type: bearerToken
+              bearerTokenFrom: env("OO_AUTH_HEADER")
+            extraHeaders:
               organization: default
               stream-name: default
             tls:
