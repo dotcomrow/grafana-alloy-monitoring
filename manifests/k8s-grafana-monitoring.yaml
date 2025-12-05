@@ -109,7 +109,7 @@ spec:
             url: openobserve-openobserve-standalone.openobserve.svc.cluster.local:5081
             protocol: grpc
             headers:
-              Authorization: "$(OO_AUTH_HEADER)"
+              Authorization: "${OO_AUTH_HEADER}"
               organization: default
               stream-name: default
             tls:
