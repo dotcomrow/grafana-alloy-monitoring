@@ -114,9 +114,10 @@ spec:
             auth:
               type: none
             extraHeaders:
-              Authorization: env("OO_AUTH_HEADER")
               organization: default
               stream-name: default
+            extraHeadersFrom:
+              Authorization: env("OO_AUTH_HEADER")
             tls:
               insecure: true
             traces:
