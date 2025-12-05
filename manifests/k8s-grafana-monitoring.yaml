@@ -74,15 +74,48 @@ spec:
         - -c
         - |
           set -e
-          if kubectl get secret oo-auth -n logging-and-monitoring >/dev/null 2>&1; then
-            echo "🔄 openobserve root token already exists in logging-and-monitoring namespace"
-          else
-            echo "🔁 Copying 'oo-auth' from openobserve → logging-and-monitoring..."
-            kubectl get secret oo-auth -n openobserve -o yaml | \
-              sed 's/namespace: openobserve/namespace: logging-and-monitoring/' | \
-              kubectl apply -f -
-            echo "✅ Secret copied successfully."
+          SRC_NS=openobserve
+          DST_NS=logging-and-monitoring
+
+          if ! kubectl get secret oo-auth -n "${SRC_NS}" >/dev/null 2>&1; then
+            echo "❌ Source secret oo-auth not found in ${SRC_NS}" >&2
+            exit 1
           fi
+
+          AUTH_B64="$(kubectl get secret oo-auth -n "${SRC_NS}" -o jsonpath='{.data.OO_AUTH_HEADER}')"
+          if [ -z "${AUTH_B64}" ]; then
+            echo "❌ OO_AUTH_HEADER missing in source secret" >&2
+            exit 1
+          fi
+
+          AUTH_HEADER="$(printf '%s' "${AUTH_B64}" | base64 -d)"
+          if [ "${AUTH_HEADER#Basic }" = "${AUTH_HEADER}" ]; then
+            echo "❌ OO_AUTH_HEADER must be a Basic header (e.g., 'Basic base64(user:pass)')" >&2
+            exit 1
+          fi
+
+          PAYLOAD="${AUTH_HEADER#Basic }"
+          USERPASS="$(printf '%s' "${PAYLOAD}" | base64 -d 2>/dev/null || true)"
+          USERNAME="${USERPASS%%:*}"
+          PASSWORD="${USERPASS#*:}"
+          if [ -z "${USERNAME}" ] || [ "${USERNAME}" = "${USERPASS}" ]; then
+            echo "❌ Unable to parse Basic credentials from OO_AUTH_HEADER" >&2
+            exit 1
+          fi
+
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: oo-auth
+            namespace: ${DST_NS}
+          type: Opaque
+          stringData:
+            OO_AUTH_HEADER: "${AUTH_HEADER}"
+            username: "${USERNAME}"
+            password: "${PASSWORD}"
+          EOF
+          echo "✅ Secret synced to ${DST_NS} with parsed credentials (if present)."
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -105,12 +138,13 @@ spec:
         destinations:
           - name: openobserve-otlp
             type: otlp
-            # Send directly to OpenObserve OTLP HTTP listener with bearer token from k8s secret
+            # Send directly to OpenObserve OTLP HTTP listener with Basic creds from oo-auth secret
             url: http://openobserve-openobserve-standalone.openobserve.svc.cluster.local:5080/api/default/default/otlp
             protocol: http
             auth:
-              type: bearerToken
-              bearerTokenFrom: env("OO_AUTH_HEADER")
+              type: basic
+              usernameFrom: env("OO_AUTH_USERNAME")
+              passwordFrom: env("OO_AUTH_PASSWORD")
             extraHeaders:
               organization: default
               stream-name: default
@@ -188,6 +222,16 @@ spec:
                   secretKeyRef:
                     name: oo-auth
                     key: OO_AUTH_HEADER
+              - name: OO_AUTH_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    name: oo-auth
+                    key: username
+              - name: OO_AUTH_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: oo-auth
+                    key: password
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
@@ -216,6 +260,16 @@ spec:
                   secretKeyRef:
                     name: oo-auth
                     key: OO_AUTH_HEADER
+              - name: OO_AUTH_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    name: oo-auth
+                    key: username
+              - name: OO_AUTH_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: oo-auth
+                    key: password
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
@@ -265,6 +319,16 @@ spec:
                   secretKeyRef:
                     name: oo-auth
                     key: OO_AUTH_HEADER
+              - name: OO_AUTH_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    name: oo-auth
+                    key: username
+              - name: OO_AUTH_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: oo-auth
+                    key: password
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
@@ -318,6 +382,16 @@ spec:
                   secretKeyRef:
                     name: oo-auth
                     key: OO_AUTH_HEADER
+              - name: OO_AUTH_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    name: oo-auth
+                    key: username
+              - name: OO_AUTH_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: oo-auth
+                    key: password
               - name: CLUSTER_NAME
                 value: suncoast-systems-k8s-cluster
               - name: NAMESPACE
