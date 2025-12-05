@@ -106,7 +106,7 @@ spec:
           - name: openobserve-otlp
             type: otlp
             # Send directly to OpenObserve OTLP HTTP listener with bearer token from k8s secret
-            url: http://openobserve-openobserve-standalone.openobserve.svc.cluster.local:5080
+            url: http://openobserve-openobserve-standalone.openobserve.svc.cluster.local:5080/api/default/default/otlp
             protocol: http
             auth:
               type: bearerToken
