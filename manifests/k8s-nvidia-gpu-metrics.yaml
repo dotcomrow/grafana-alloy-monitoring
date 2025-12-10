@@ -19,7 +19,7 @@ data:
                   source_labels: [__name__]
                   target_label: __name__
           remote_write:
-            - url: http://openobserve-openobserve-standalone.openobserve.svc.cluster.local:5080/api/default/prometheus/api/v1/write
+            - url: http://openobserve-router.openobserve.svc.cluster.local:5080/api/default/prometheus/api/v1/write
               headers:
                 organization: default
                 stream-name: gpu_metrics

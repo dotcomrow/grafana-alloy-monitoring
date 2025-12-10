@@ -112,7 +112,7 @@ spec:
           - name: openobserve-otlp
             type: otlp
             # Send directly to OpenObserve OTLP gRPC listener with Authorization header from oo-auth secret
-            url: openobserve-openobserve-standalone.openobserve.svc.cluster.local:5081
+            url: openobserve-router.openobserve.svc.cluster.local:5081
             protocol: grpc
             auth:
               type: none
