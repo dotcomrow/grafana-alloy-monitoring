@@ -81,13 +81,6 @@ spec:
           image: grafana/agent:v0.40.3
           args:
             - "--config.file=/etc/agent/agent.yaml"
-          resources:
-            requests:
-              memory: "128Mi"
-              cpu: "250m"
-            limits:
-              memory: "256Mi"
-              cpu: "500m"
           volumeMounts:
             - name: config
               mountPath: /etc/agent

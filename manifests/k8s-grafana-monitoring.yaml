@@ -168,13 +168,6 @@ spec:
         alloy-metrics:
           enabled: true
           alloy:
-            resources:
-              requests:
-                cpu: "250m"
-                memory: "128Mi"
-              limits:
-                cpu: "500m"
-                memory: "1Gi"
             metrics:
               configs:
                 - name: trim-unneeded-metrics
@@ -210,13 +203,6 @@ spec:
         alloy-singleton:
           enabled: true
           alloy:
-            resources:
-              requests:
-                cpu: "250m"
-                memory: "128Mi"
-              limits:
-                cpu: "500m"
-                memory: "512Mi"
             extraEnv:
               - name: OO_AUTH_HEADER
                 valueFrom:
@@ -238,13 +224,6 @@ spec:
         alloy-logs:
           enabled: true
           alloy:
-            resources:
-              requests:
-                cpu: "250m"
-                memory: "128Mi"
-              limits:
-                cpu: "500m"
-                memory: "512Mi"
             config:
               logs:
                 config:
@@ -299,13 +278,6 @@ spec:
         alloy-receiver:
           enabled: true
           alloy:
-            resources:
-              requests:
-                cpu: "250m"
-                memory: "128Mi"
-              limits:
-                cpu: "500m"
-                memory: "512Mi"
             extraPorts:
               - name: otlp-grpc
                 port: 4317
