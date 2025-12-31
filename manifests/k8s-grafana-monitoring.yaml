@@ -107,20 +107,8 @@ spec:
         cluster:
           name: suncoast-systems-k8s-cluster
         kubeStateMetrics:
-          enabled: true
+          enabled: false
         destinations:
-          - name: openobserve-prometheus
-            type: prometheus
-            url: http://openobserve-router.openobserve.svc.cluster.local:5080/api/default/prometheus/api/v1/write
-            auth:
-              type: none
-            extraHeaders:
-              organization: default
-              stream-name: default
-            extraHeadersFrom:
-              Authorization: env("OO_AUTH_HEADER")
-            tls:
-              insecure: true
           - name: openobserve-otlp
             type: otlp
             # Send directly to OpenObserve OTLP gRPC listener with Authorization header from oo-auth secret
@@ -142,37 +130,7 @@ spec:
             metrics:
               enabled: true
         clusterMetrics:
-          enabled: true
-          destinations:
-            - openobserve-prometheus
-          kube-state-metrics:
-            resources:
-              requests:
-                cpu: 25m
-                memory: 128Mi
-              limits:
-                cpu: 200m
-                memory: 256Mi
-          node-exporter:
-            resources:
-              requests:
-                cpu: 25m
-                memory: 128Mi
-              limits:
-                cpu: 200m
-                memory: 256Mi
-          opencost:
-            enabled: false
-            metricsSource: openobserve-otlp
-            opencost:
-              exporter:
-                defaultClusterId: suncoast-systems-k8s-cluster
-              prometheus:
-                existingSecretName: ""
-                external:
-                  url: ""
-          kepler:
-            enabled: false
+          enabled: false
         clusterEvents:
           enabled: true
         nodeLogs:
@@ -196,55 +154,7 @@ spec:
         autoInstrumentation:
           enabled: false
         alloy-metrics:
-          enabled: true
-          alloy:
-            metrics:
-              configs:
-                - name: trim-unneeded-metrics
-                  scrape_configs:
-                    - job_name: 'node'
-                      metric_relabel_configs:
-                        - source_labels: [fstype]
-                          regex: "tmpfs|devtmpfs|overlay"
-                          action: drop
-                    - job_name: 'kubelet'
-                      metric_relabel_configs:
-                        - source_labels: [container]
-                          regex: "POD|pause|"
-                          action: drop
-            extraEnv:
-              - name: OO_AUTH_HEADER
-                valueFrom:
-                  secretKeyRef:
-                    name: oo-auth
-                    key: OO_AUTH_HEADER
-              - name: CLUSTER_NAME
-                value: suncoast-systems-k8s-cluster
-              - name: NAMESPACE
-                valueFrom:
-                  fieldRef:
-                    fieldPath: metadata.namespace
-              - name: POD_NAME
-                valueFrom:
-                  fieldRef:
-                    fieldPath: metadata.name
-            resources:
-              requests:
-                cpu: 100m
-                memory: 700Mi
-              limits:
-                cpu: 500m
-                memory: 1Gi
-            remoteConfig:
-              enabled: false
-          configReloader:
-            resources:
-              requests:
-                cpu: 10m
-                memory: 64Mi
-              limits:
-                cpu: 50m
-                memory: 256Mi
+          enabled: false
         alloy-singleton:
           enabled: true
           alloy:
