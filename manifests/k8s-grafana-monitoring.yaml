@@ -109,6 +109,22 @@ spec:
         kubeStateMetrics:
           enabled: false
         destinations:
+          - name: openobserve-pod-logs
+            type: otlp
+            # Send pod logs to a dedicated stream for easy discovery in OpenObserve
+            url: openobserve-router.openobserve.svc.cluster.local:5081
+            protocol: grpc
+            auth:
+              type: none
+            extraHeaders:
+              organization: default
+              stream-name: k8s_pod_logs
+            extraHeadersFrom:
+              Authorization: env("OO_AUTH_HEADER")
+            tls:
+              insecure: true
+            logs:
+              enabled: true
           - name: openobserve-otlp
             type: otlp
             # Send directly to OpenObserve OTLP gRPC listener with Authorization header from oo-auth secret
@@ -137,6 +153,8 @@ spec:
           enabled: false
         podLogs:
           enabled: true
+          destinations:
+            - openobserve-pod-logs
         applicationObservability:
           enabled: true
           receivers:
