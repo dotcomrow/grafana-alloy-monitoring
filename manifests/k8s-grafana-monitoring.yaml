@@ -315,6 +315,21 @@ spec:
           controller:
             podAnnotations:
               reloader.stakater.com/auto: "true"
+            resources:
+              requests:
+                cpu: 250m
+                memory: 256Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
+            remoteConfig:
+              enabled: false
+            volumes:
+              extra:
+                - name: journal
+                  hostPath:
+                    path: /var/log/journal
+          alloy:
             extraEnv:
               - name: OO_AUTH_HEADER
                 valueFrom:
@@ -335,23 +350,11 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: spec.nodeName
-            resources:
-              requests:
-                cpu: 250m
-                memory: 256Mi
-              limits:
-                cpu: 500m
-                memory: 512Mi
-            remoteConfig:
-              enabled: false
-            volumeMounts:
-              - name: journal
-                mountPath: /var/log/journal
-                readOnly: true
-            volumes:
-              - name: journal
-                hostPath:
-                  path: /var/log/journal
+            mounts:
+              extra:
+                - name: journal
+                  mountPath: /var/log/journal
+                  readOnly: true
           configReloader:
             resources:
               requests:
