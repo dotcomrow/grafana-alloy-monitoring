@@ -163,8 +163,8 @@ spec:
                 source = "body"
                 expressions = {
                   traceparent = "endpointRequest.headers.traceparent || entrypointRequest.headers.traceparent",
-                  trace_id = "endpointRequest.headers.\"x-trace-id\" || endpointRequest.headers.\"X-Trace-Id\" || endpointRequest.headers.trace_id || entrypointRequest.headers.\"x-trace-id\" || entrypointRequest.headers.\"X-Trace-Id\" || entrypointRequest.headers.trace_id",
-                  span_id = "endpointRequest.headers.\"x-span-id\" || endpointRequest.headers.\"X-Span-Id\" || endpointRequest.headers.span_id || entrypointRequest.headers.\"x-span-id\" || entrypointRequest.headers.\"X-Span-Id\" || entrypointRequest.headers.span_id",
+                  trace_id = "traceId || endpointRequest.headers.\"x-trace-id\" || endpointRequest.headers.\"X-Trace-Id\" || endpointRequest.headers.trace_id || entrypointRequest.headers.\"x-trace-id\" || entrypointRequest.headers.\"X-Trace-Id\" || entrypointRequest.headers.trace_id",
+                  span_id = "spanId || endpointRequest.headers.\"x-span-id\" || endpointRequest.headers.\"X-Span-Id\" || endpointRequest.headers.span_id || entrypointRequest.headers.\"x-span-id\" || entrypointRequest.headers.\"X-Span-Id\" || entrypointRequest.headers.span_id",
                   x_forwarded_for = "entrypointRequest.headers.\"x-forwarded-for\"",
                   x_forwarded_host = "entrypointRequest.headers.\"x-forwarded-host\"",
                   x_forwarded_proto = "entrypointRequest.headers.\"x-forwarded-proto\"",
@@ -181,13 +181,15 @@ spec:
               }
               stage.regex {
                 source = "traceparent"
-                expression = "[0-9a-f]{2}-(?P<trace_id>[0-9a-f]{32})-(?P<span_id>[0-9a-f]{16})-[0-9a-f]{2}"
+                expression = "[0-9a-f]{2}-(?P<trace_id_parent>[0-9a-f]{32})-(?P<span_id_parent>[0-9a-f]{16})-[0-9a-f]{2}"
               }
               stage.labels {
                 values = {
                   traceparent = "",
                   trace_id = "",
                   span_id = "",
+                  trace_id_parent = "",
+                  span_id_parent = "",
                   x_forwarded_for = "",
                   x_forwarded_host = "",
                   x_forwarded_proto = "",
