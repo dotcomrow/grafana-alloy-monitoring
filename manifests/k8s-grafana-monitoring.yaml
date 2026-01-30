@@ -256,6 +256,25 @@ spec:
               }
             }
             stage.match {
+              selector = "{container=\"gravitee-gateway\"}"
+              stage.regex {
+                source = "body"
+                expression = "trace_id=(?P<trace_id>[0-9a-f]{32}|-)\\s+span_id=(?P<span_id>[0-9a-f]{16}|-).*trace_id_alt=(?P<trace_id_alt>[0-9a-f]{32}|-)\\s+span_id_alt=(?P<span_id_alt>[0-9a-f]{16}|-)"
+              }
+              stage.regex {
+                source = "body"
+                expression = "trace_id_alt=(?P<trace_id>[0-9a-f]{32})\\s+span_id_alt=(?P<span_id>[0-9a-f]{16})"
+              }
+              stage.labels {
+                values = {
+                  trace_id = "",
+                  span_id = "",
+                  trace_id_alt = "",
+                  span_id_alt = "",
+                }
+              }
+            }
+            stage.match {
               selector = "{container=\"hasura\"}"
               stage.json {
                 source = "body"
