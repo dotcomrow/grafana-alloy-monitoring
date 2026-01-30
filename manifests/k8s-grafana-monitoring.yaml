@@ -155,6 +155,7 @@ spec:
           enabled: true
           destinations:
             - openobserve-pod-logs
+            - openobserve-otlp
           extraLogProcessingStages: |
             stage.match {
               selector = "{container=\"gravitee-reporter-tail\"}"
