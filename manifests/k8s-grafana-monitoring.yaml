@@ -63,6 +63,7 @@ spec:
     metadata:
       annotations:
         linkerd.io/inject: "disabled"
+        reloader.stakater.com/auto: "true"
     spec:
       serviceAccountName: copy-openobserve-secret
       restartPolicy: OnFailure
@@ -175,6 +176,8 @@ spec:
           enabled: false
         alloy-singleton:
           enabled: true
+          podAnnotations:
+            reloader.stakater.com/auto: "true"
           alloy:
             extraEnv:
               - name: OO_AUTH_HEADER
