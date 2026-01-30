@@ -183,6 +183,14 @@ spec:
                 source = "traceparent"
                 expression = "[0-9a-f]{2}-(?P<trace_id_parent>[0-9a-f]{32})-(?P<span_id_parent>[0-9a-f]{16})-[0-9a-f]{2}"
               }
+              stage.regex {
+                source = "body"
+                expression = "\"x-trace-id\"\\s*:\\s*\\[\"(?P<trace_id>[0-9a-f]{32})\"\\]"
+              }
+              stage.regex {
+                source = "body"
+                expression = "\"x-span-id\"\\s*:\\s*\\[\"(?P<span_id>[0-9a-f]{16})\"\\]"
+              }
               stage.labels {
                 values = {
                   traceparent = "",
