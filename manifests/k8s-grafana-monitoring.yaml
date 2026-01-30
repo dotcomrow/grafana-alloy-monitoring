@@ -161,9 +161,9 @@ spec:
               stage.json {
                 source = "body"
                 expressions = {
-                  traceparent = "entrypointRequest.headers.traceparent.0",
-                  trace_id = "entrypointRequest.headers.trace_id.0",
-                  span_id = "entrypointRequest.headers.span_id.0",
+                  traceparent = "entrypointRequest.headers.traceparent[0]",
+                  trace_id = "entrypointRequest.headers.trace_id[0]",
+                  span_id = "entrypointRequest.headers.span_id[0]",
                 }
               }
               stage.regex {
