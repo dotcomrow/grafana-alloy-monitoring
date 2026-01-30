@@ -117,12 +117,20 @@ spec:
             auth:
               type: none
             processors:
+              attributes:
+                actions:
+                  - key: trace_id
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.trace_id
+                  - key: span_id
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.span_id
+                  - key: traceparent
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.traceparent
               transform:
                 logs:
                   log:
-                    - 'set(attributes["trace_id"], attributes["loki.attribute.labels"]["trace_id"]) where attributes["trace_id"] == nil and attributes["loki.attribute.labels"]["trace_id"] != nil'
-                    - 'set(attributes["span_id"], attributes["loki.attribute.labels"]["span_id"]) where attributes["span_id"] == nil and attributes["loki.attribute.labels"]["span_id"] != nil'
-                    - 'set(attributes["traceparent"], attributes["loki.attribute.labels"]["traceparent"]) where attributes["traceparent"] == nil and attributes["loki.attribute.labels"]["traceparent"] != nil'
                     - 'set(attributes["trace_id"], attributes["loki.attribute.labels.trace_id"]) where attributes["trace_id"] == nil and attributes["loki.attribute.labels.trace_id"] != nil'
                     - 'set(attributes["span_id"], attributes["loki.attribute.labels.span_id"]) where attributes["span_id"] == nil and attributes["loki.attribute.labels.span_id"] != nil'
                     - 'set(attributes["traceparent"], attributes["loki.attribute.labels.traceparent"]) where attributes["traceparent"] == nil and attributes["loki.attribute.labels.traceparent"] != nil'
@@ -143,12 +151,20 @@ spec:
             auth:
               type: none
             processors:
+              attributes:
+                actions:
+                  - key: trace_id
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.trace_id
+                  - key: span_id
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.span_id
+                  - key: traceparent
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.traceparent
               transform:
                 logs:
                   log:
-                    - 'set(attributes["trace_id"], attributes["loki.attribute.labels"]["trace_id"]) where attributes["trace_id"] == nil and attributes["loki.attribute.labels"]["trace_id"] != nil'
-                    - 'set(attributes["span_id"], attributes["loki.attribute.labels"]["span_id"]) where attributes["span_id"] == nil and attributes["loki.attribute.labels"]["span_id"] != nil'
-                    - 'set(attributes["traceparent"], attributes["loki.attribute.labels"]["traceparent"]) where attributes["traceparent"] == nil and attributes["loki.attribute.labels"]["traceparent"] != nil'
                     - 'set(attributes["trace_id"], attributes["loki.attribute.labels.trace_id"]) where attributes["trace_id"] == nil and attributes["loki.attribute.labels.trace_id"] != nil'
                     - 'set(attributes["span_id"], attributes["loki.attribute.labels.span_id"]) where attributes["span_id"] == nil and attributes["loki.attribute.labels.span_id"] != nil'
                     - 'set(attributes["traceparent"], attributes["loki.attribute.labels.traceparent"]) where attributes["traceparent"] == nil and attributes["loki.attribute.labels.traceparent"] != nil'
