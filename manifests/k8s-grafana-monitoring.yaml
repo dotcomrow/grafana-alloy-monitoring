@@ -138,10 +138,10 @@ spec:
                     - 'set(span_id, attributes["span_id"]) where span_id == nil and attributes["span_id"] != nil'
                     - 'set(trace_id, attributes["loki.attribute.labels.trace_id"]) where trace_id == nil and attributes["loki.attribute.labels.trace_id"] != nil'
                     - 'set(span_id, attributes["loki.attribute.labels.span_id"]) where span_id == nil and attributes["loki.attribute.labels.span_id"] != nil'
-                    - 'set(trace_id, TraceID(attributes["trace_id"])) where attributes["trace_id"] != nil'
-                    - 'set(span_id, SpanID(attributes["span_id"])) where attributes["span_id"] != nil'
-                    - 'set(trace_id, TraceID(attributes["loki.attribute.labels.trace_id"])) where attributes["loki.attribute.labels.trace_id"] != nil'
-                    - 'set(span_id, SpanID(attributes["loki.attribute.labels.span_id"])) where attributes["loki.attribute.labels.span_id"] != nil'
+                    - 'set(trace_id.string, attributes["trace_id"]) where attributes["trace_id"] != nil'
+                    - 'set(span_id.string, attributes["span_id"]) where attributes["span_id"] != nil'
+                    - 'set(trace_id.string, attributes["loki.attribute.labels.trace_id"]) where attributes["loki.attribute.labels.trace_id"] != nil'
+                    - 'set(span_id.string, attributes["loki.attribute.labels.span_id"]) where attributes["loki.attribute.labels.span_id"] != nil'
             extraHeaders:
               organization: default
               stream-name: k8s_pod_logs
@@ -180,10 +180,10 @@ spec:
                     - 'set(span_id, attributes["span_id"]) where span_id == nil and attributes["span_id"] != nil'
                     - 'set(trace_id, attributes["loki.attribute.labels.trace_id"]) where trace_id == nil and attributes["loki.attribute.labels.trace_id"] != nil'
                     - 'set(span_id, attributes["loki.attribute.labels.span_id"]) where span_id == nil and attributes["loki.attribute.labels.span_id"] != nil'
-                    - 'set(trace_id, TraceID(attributes["trace_id"])) where attributes["trace_id"] != nil'
-                    - 'set(span_id, SpanID(attributes["span_id"])) where attributes["span_id"] != nil'
-                    - 'set(trace_id, TraceID(attributes["loki.attribute.labels.trace_id"])) where attributes["loki.attribute.labels.trace_id"] != nil'
-                    - 'set(span_id, SpanID(attributes["loki.attribute.labels.span_id"])) where attributes["loki.attribute.labels.span_id"] != nil'
+                    - 'set(trace_id.string, attributes["trace_id"]) where attributes["trace_id"] != nil'
+                    - 'set(span_id.string, attributes["span_id"]) where attributes["span_id"] != nil'
+                    - 'set(trace_id.string, attributes["loki.attribute.labels.trace_id"]) where attributes["loki.attribute.labels.trace_id"] != nil'
+                    - 'set(span_id.string, attributes["loki.attribute.labels.span_id"]) where attributes["loki.attribute.labels.span_id"] != nil'
             extraHeaders:
               organization: default
               stream-name: default
