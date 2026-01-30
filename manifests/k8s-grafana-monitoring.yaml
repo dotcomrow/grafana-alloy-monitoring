@@ -172,8 +172,6 @@ spec:
                 x_user_id = "x_user_id",
                 x_user_issuer = "x_user_issuer",
                 x_user_username = "x_user_username",
-                x_gravitee_request_id = "x_gravitee_request_id",
-                x_gravitee_transaction_id = "x_gravitee_transaction_id",
                 gravitee_request_id = "requestId",
                 gravitee_transaction_id = "requestId",
                 host = "host",
@@ -202,8 +200,6 @@ spec:
                 x_user_id = "",
                 x_user_issuer = "",
                 x_user_username = "",
-                x_gravitee_request_id = "",
-                x_gravitee_transaction_id = "",
                 gravitee_request_id = "",
                 gravitee_transaction_id = "",
                 host = "",
@@ -248,8 +244,6 @@ spec:
             - x_user_id
             - x_user_issuer
             - x_user_username
-            - x_gravitee_request_id
-            - x_gravitee_transaction_id
             - gravitee_request_id
             - gravitee_transaction_id
             - host
