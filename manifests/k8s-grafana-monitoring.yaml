@@ -162,9 +162,9 @@ spec:
               stage.json {
                 source = "body"
                 expressions = {
-                  traceparent = "entrypointRequest.headers.traceparent",
-                  trace_id = "entrypointRequest.headers.\"x-trace-id\" || entrypointRequest.headers.\"X-Trace-Id\" || entrypointRequest.headers.trace_id",
-                  span_id = "entrypointRequest.headers.\"x-span-id\" || entrypointRequest.headers.\"X-Span-Id\" || entrypointRequest.headers.span_id",
+                  traceparent = "endpointRequest.headers.traceparent || entrypointRequest.headers.traceparent",
+                  trace_id = "endpointRequest.headers.\"x-trace-id\" || endpointRequest.headers.\"X-Trace-Id\" || endpointRequest.headers.trace_id || entrypointRequest.headers.\"x-trace-id\" || entrypointRequest.headers.\"X-Trace-Id\" || entrypointRequest.headers.trace_id",
+                  span_id = "endpointRequest.headers.\"x-span-id\" || endpointRequest.headers.\"X-Span-Id\" || endpointRequest.headers.span_id || entrypointRequest.headers.\"x-span-id\" || entrypointRequest.headers.\"X-Span-Id\" || entrypointRequest.headers.span_id",
                   x_forwarded_for = "entrypointRequest.headers.\"x-forwarded-for\"",
                   x_forwarded_host = "entrypointRequest.headers.\"x-forwarded-host\"",
                   x_forwarded_proto = "entrypointRequest.headers.\"x-forwarded-proto\"",
