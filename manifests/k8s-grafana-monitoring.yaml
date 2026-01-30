@@ -162,21 +162,21 @@ spec:
               stage.json {
                 source = "body"
                 expressions = {
-                  traceparent = "endpointRequest.headers.traceparent || entrypointRequest.headers.traceparent",
-                  trace_id = "traceId || endpointRequest.headers.\"x-trace-id\" || endpointRequest.headers.\"X-Trace-Id\" || endpointRequest.headers.trace_id || entrypointRequest.headers.\"x-trace-id\" || entrypointRequest.headers.\"X-Trace-Id\" || entrypointRequest.headers.trace_id",
-                  span_id = "spanId || endpointRequest.headers.\"x-span-id\" || endpointRequest.headers.\"X-Span-Id\" || endpointRequest.headers.span_id || entrypointRequest.headers.\"x-span-id\" || entrypointRequest.headers.\"X-Span-Id\" || entrypointRequest.headers.span_id",
-                  x_forwarded_for = "entrypointRequest.headers.\"x-forwarded-for\"",
-                  x_forwarded_host = "entrypointRequest.headers.\"x-forwarded-host\"",
-                  x_forwarded_proto = "entrypointRequest.headers.\"x-forwarded-proto\"",
-                  x_real_ip = "entrypointRequest.headers.\"x-real-ip\"",
-                  x_client_ip = "entrypointRequest.headers.\"x-client-ip\"",
-                  user_agent = "entrypointRequest.headers.\"user-agent\"",
-                  x_user_email = "entrypointRequest.headers.\"x-user-email\"",
-                  x_user_id = "entrypointRequest.headers.\"x-user-id\"",
-                  x_user_issuer = "entrypointRequest.headers.\"x-user-issuer\"",
-                  x_user_username = "entrypointRequest.headers.\"x-user-username\"",
-                  gravitee_request_id = "entrypointRequest.headers.\"x-gravitee-request-id\" || entrypointRequest.headers.\"X-Gravitee-Request-Id\"",
-                  gravitee_transaction_id = "entrypointRequest.headers.\"x-gravitee-transaction-id\" || entrypointRequest.headers.\"X-Gravitee-Transaction-Id\"",
+                  traceparent = "endpointRequest.headers.traceparent[0] || entrypointRequest.headers.traceparent[0]",
+                  trace_id = "traceId || endpointRequest.headers.\"x-trace-id\"[0] || endpointRequest.headers.\"X-Trace-Id\"[0] || endpointRequest.headers.trace_id[0] || entrypointRequest.headers.\"x-trace-id\"[0] || entrypointRequest.headers.\"X-Trace-Id\"[0] || entrypointRequest.headers.trace_id[0]",
+                  span_id = "spanId || endpointRequest.headers.\"x-span-id\"[0] || endpointRequest.headers.\"X-Span-Id\"[0] || endpointRequest.headers.span_id[0] || entrypointRequest.headers.\"x-span-id\"[0] || entrypointRequest.headers.\"X-Span-Id\"[0] || entrypointRequest.headers.span_id[0]",
+                  x_forwarded_for = "entrypointRequest.headers.\"x-forwarded-for\"[0]",
+                  x_forwarded_host = "entrypointRequest.headers.\"x-forwarded-host\"[0]",
+                  x_forwarded_proto = "entrypointRequest.headers.\"x-forwarded-proto\"[0]",
+                  x_real_ip = "entrypointRequest.headers.\"x-real-ip\"[0]",
+                  x_client_ip = "entrypointRequest.headers.\"x-client-ip\"[0]",
+                  user_agent = "entrypointRequest.headers.\"user-agent\"[0]",
+                  x_user_email = "entrypointRequest.headers.\"x-user-email\"[0]",
+                  x_user_id = "entrypointRequest.headers.\"x-user-id\"[0]",
+                  x_user_issuer = "entrypointRequest.headers.\"x-user-issuer\"[0]",
+                  x_user_username = "entrypointRequest.headers.\"x-user-username\"[0]",
+                  gravitee_request_id = "entrypointRequest.headers.\"x-gravitee-request-id\"[0] || entrypointRequest.headers.\"X-Gravitee-Request-Id\"[0]",
+                  gravitee_transaction_id = "entrypointRequest.headers.\"x-gravitee-transaction-id\"[0] || entrypointRequest.headers.\"X-Gravitee-Transaction-Id\"[0]",
                 }
               }
               stage.regex {
