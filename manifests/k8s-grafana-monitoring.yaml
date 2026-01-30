@@ -162,12 +162,17 @@ spec:
                 source = "body"
                 expressions = {
                   traceparent = "entrypointRequest.headers.traceparent[0]",
+                  x_traceparent = "entrypointRequest.headers.x-traceparent[0]",
                   trace_id = "entrypointRequest.headers.trace_id[0]",
                   span_id = "entrypointRequest.headers.span_id[0]",
                 }
               }
               stage.regex {
                 source = "traceparent"
+                expression = "^[0-9a-f]{2}-(?P<trace_id>[0-9a-f]{32})-(?P<span_id>[0-9a-f]{16})-"
+              }
+              stage.regex {
+                source = "x_traceparent"
                 expression = "^[0-9a-f]{2}-(?P<trace_id>[0-9a-f]{32})-(?P<span_id>[0-9a-f]{16})-"
               }
               stage.labels {
