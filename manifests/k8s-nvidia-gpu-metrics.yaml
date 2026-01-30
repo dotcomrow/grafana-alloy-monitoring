@@ -35,6 +35,8 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
     linkerd.io/inject: "disabled"
+    configmap.reloader.stakater.com/reload: "grafana-gpu-agent-config"
+    secret.reloader.stakater.com/reload: "oo-auth"
 spec:
   replicas: 1
   selector:
