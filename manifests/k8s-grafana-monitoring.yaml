@@ -260,7 +260,7 @@ spec:
               stage.json {
                 source = "body"
                 expressions = {
-                  traceparent = "detail.http_info.headers.traceparent || detail.http_info.headers.\"Traceparent\" || detail.request.headers.traceparent || detail.request.headers.\"Traceparent\"",
+                  traceparent = "detail.http_info.headers.traceparent || detail.http_info.headers.\"Traceparent\" || detail.request.headers.traceparent || detail.request.headers.\"Traceparent\" || detail.user_vars.\"x-hasura-traceparent\" || detail.user_vars.\"X-Hasura-Traceparent\"",
                   trace_id = "detail.http_info.headers.\"x-trace-id\" || detail.http_info.headers.\"X-Trace-Id\" || detail.request.headers.\"x-trace-id\" || detail.request.headers.\"X-Trace-Id\"",
                   span_id = "detail.http_info.headers.\"x-span-id\" || detail.http_info.headers.\"X-Span-Id\" || detail.request.headers.\"x-span-id\" || detail.request.headers.\"X-Span-Id\"",
                   remote_addr = "detail.http_info.ip",
