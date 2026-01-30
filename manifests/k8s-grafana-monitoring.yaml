@@ -172,7 +172,7 @@ spec:
             stage.match {
               selector = "{container=\"gravitee-reporter-tail\"}"
               stage.json {
-                source = "body"
+                source = "log"
                 expressions = {
                   traceparent = "endpointRequest.headers.traceparent[0] || entrypointRequest.headers.traceparent[0]",
                   trace_id = "traceId || endpointRequest.headers.\"x-trace-id\"[0] || endpointRequest.headers.\"X-Trace-Id\"[0] || endpointRequest.headers.trace_id[0] || entrypointRequest.headers.\"x-trace-id\"[0] || entrypointRequest.headers.\"X-Trace-Id\"[0] || entrypointRequest.headers.trace_id[0]",
@@ -196,11 +196,11 @@ spec:
                 expression = "[0-9a-f]{2}-(?P<trace_id_parent>[0-9a-f]{32})-(?P<span_id_parent>[0-9a-f]{16})-[0-9a-f]{2}"
               }
               stage.regex {
-                source = "body"
+                source = "log"
                 expression = "\"x-trace-id\"\\s*:\\s*\\[\"(?P<trace_id>[0-9a-f]{32})\"\\]"
               }
               stage.regex {
-                source = "body"
+                source = "log"
                 expression = "\"x-span-id\"\\s*:\\s*\\[\"(?P<span_id>[0-9a-f]{16})\"\\]"
               }
               stage.labels {
