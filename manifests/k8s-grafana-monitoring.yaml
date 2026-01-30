@@ -162,7 +162,7 @@ spec:
                 source = "body"
                 expressions = {
                   traceparent = "entrypointRequest.headers.traceparent[0]",
-                  x_traceparent = "entrypointRequest.headers.x-traceparent[0]",
+                  x_traceparent = "entrypointRequest.headers[\"x-traceparent\"][0]",
                   trace_id = "entrypointRequest.headers.trace_id[0]",
                   span_id = "entrypointRequest.headers.span_id[0]",
                 }
