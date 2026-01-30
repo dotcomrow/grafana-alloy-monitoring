@@ -204,6 +204,27 @@ spec:
                   gravitee_transaction_id = "",
                 }
               }
+              stage.structured_metadata {
+                values = {
+                  traceparent = "",
+                  trace_id = "",
+                  span_id = "",
+                  trace_id_parent = "",
+                  span_id_parent = "",
+                  x_forwarded_for = "",
+                  x_forwarded_host = "",
+                  x_forwarded_proto = "",
+                  x_real_ip = "",
+                  x_client_ip = "",
+                  user_agent = "",
+                  x_user_email = "",
+                  x_user_id = "",
+                  x_user_issuer = "",
+                  x_user_username = "",
+                  gravitee_request_id = "",
+                  gravitee_transaction_id = "",
+                }
+              }
             }
             stage.match {
               selector = "{container=\"apisix\"}"
@@ -235,6 +256,28 @@ spec:
                 expression = "[0-9a-f]{2}-(?P<trace_id>[0-9a-f]{32})-(?P<span_id>[0-9a-f]{16})-[0-9a-f]{2}"
               }
               stage.labels {
+                values = {
+                  traceparent = "",
+                  trace_id = "",
+                  span_id = "",
+                  remote_addr = "",
+                  x_forwarded_for = "",
+                  x_forwarded_host = "",
+                  x_forwarded_proto = "",
+                  x_real_ip = "",
+                  x_client_ip = "",
+                  user_agent = "",
+                  host = "",
+                  scheme = "",
+                  method = "",
+                  uri = "",
+                  status = "",
+                  request_time = "",
+                  upstream_status = "",
+                  upstream_response_time = "",
+                }
+              }
+              stage.structured_metadata {
                 values = {
                   traceparent = "",
                   trace_id = "",
