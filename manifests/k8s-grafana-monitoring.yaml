@@ -156,6 +156,30 @@ spec:
           destinations:
             - openobserve-pod-logs
           extraLogProcessingStages: |
+            stage.match {
+              selector = "{container=\"gravitee-reporter-tail\"}"
+              stages = [
+                stage.json {
+                  source = "body"
+                  expressions = {
+                    traceparent = "entrypointRequest.headers.traceparent.0",
+                    trace_id = "entrypointRequest.headers.trace_id.0",
+                    span_id = "entrypointRequest.headers.span_id.0",
+                  }
+                },
+                stage.regex {
+                  source = "traceparent"
+                  expression = "^[0-9a-f]{2}-(?P<trace_id>[0-9a-f]{32})-(?P<span_id>[0-9a-f]{16})-"
+                },
+                stage.labels {
+                  values = {
+                    traceparent = "",
+                    trace_id = "",
+                    span_id = "",
+                  }
+                },
+              ]
+            }
             stage.json {
               expressions = {
                 trace_id = "trace_id",
