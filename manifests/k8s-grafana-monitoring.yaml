@@ -155,6 +155,105 @@ spec:
           enabled: true
           destinations:
             - openobserve-pod-logs
+          extraLogProcessingStages: |
+            stage.json {
+              expressions = {
+                trace_id = "trace_id"
+                span_id = "span_id"
+                traceparent = "traceparent"
+                remote_addr = "remote_addr"
+                x_forwarded_for = "x_forwarded_for"
+                x_forwarded_host = "x_forwarded_host"
+                x_forwarded_proto = "x_forwarded_proto"
+                x_real_ip = "x_real_ip"
+                x_client_ip = "x_client_ip"
+                user_agent = "user_agent"
+                x_user_email = "x_user_email"
+                x_user_id = "x_user_id"
+                x_user_issuer = "x_user_issuer"
+                x_user_username = "x_user_username"
+                x_gravitee_request_id = "x_gravitee_request_id"
+                x_gravitee_transaction_id = "x_gravitee_transaction_id"
+                host = "host"
+                scheme = "scheme"
+                method = "method"
+                uri = "uri"
+                status = "status"
+                request_time = "request_time"
+                upstream_status = "upstream_status"
+                upstream_response_time = "upstream_response_time"
+              }
+            }
+            stage.labels {
+              values = {
+                trace_id = ""
+                span_id = ""
+                traceparent = ""
+                remote_addr = ""
+                x_forwarded_for = ""
+                x_forwarded_host = ""
+                x_forwarded_proto = ""
+                x_real_ip = ""
+                x_client_ip = ""
+                user_agent = ""
+                x_user_email = ""
+                x_user_id = ""
+                x_user_issuer = ""
+                x_user_username = ""
+                x_gravitee_request_id = ""
+                x_gravitee_transaction_id = ""
+                host = ""
+                scheme = ""
+                method = ""
+                uri = ""
+                status = ""
+                request_time = ""
+                upstream_status = ""
+                upstream_response_time = ""
+              }
+            }
+          labelsToKeep:
+            - app.kubernetes.io/name
+            - container
+            - instance
+            - job
+            - level
+            - namespace
+            - service.name
+            - service.namespace
+            - deployment.environment
+            - deployment.environment.name
+            - k8s.namespace.name
+            - k8s.deployment.name
+            - k8s.statefulset.name
+            - k8s.daemonset.name
+            - k8s.cronjob.name
+            - k8s.job.name
+            - k8s.node.name
+            - trace_id
+            - span_id
+            - traceparent
+            - remote_addr
+            - x_forwarded_for
+            - x_forwarded_host
+            - x_forwarded_proto
+            - x_real_ip
+            - x_client_ip
+            - user_agent
+            - x_user_email
+            - x_user_id
+            - x_user_issuer
+            - x_user_username
+            - x_gravitee_request_id
+            - x_gravitee_transaction_id
+            - host
+            - scheme
+            - method
+            - uri
+            - status
+            - request_time
+            - upstream_status
+            - upstream_response_time
         applicationObservability:
           enabled: true
           receivers:
@@ -213,126 +312,9 @@ spec:
                 memory: 256Mi
         alloy-logs:
           enabled: true
-          alloy:
-            config:
-              logs:
-                config:
-                  feature.pod_logs:
-                    loki.process.pod_logs:
-                      stages:
-                        - json:
-                            expressions:
-                              trace_id: trace_id
-                              span_id: span_id
-                              traceparent: traceparent
-                              remote_addr: remote_addr
-                              x_forwarded_for: x_forwarded_for
-                              x_forwarded_host: x_forwarded_host
-                              x_forwarded_proto: x_forwarded_proto
-                              x_real_ip: x_real_ip
-                              x_client_ip: x_client_ip
-                              user_agent: user_agent
-                              x_user_email: x_user_email
-                              x_user_id: x_user_id
-                              x_user_issuer: x_user_issuer
-                              x_user_username: x_user_username
-                              x_gravitee_request_id: x_gravitee_request_id
-                              x_gravitee_transaction_id: x_gravitee_transaction_id
-                              host: host
-                              scheme: scheme
-                              method: method
-                              uri: uri
-                              status: status
-                              request_time: request_time
-                              upstream_status: upstream_status
-                              upstream_response_time: upstream_response_time
-                        - labels:
-                            trace_id:
-                            span_id:
-                            traceparent:
-                            remote_addr:
-                            x_forwarded_for:
-                            x_forwarded_host:
-                            x_forwarded_proto:
-                            x_real_ip:
-                            x_client_ip:
-                            user_agent:
-                            x_user_email:
-                            x_user_id:
-                            x_user_issuer:
-                            x_user_username:
-                            x_gravitee_request_id:
-                            x_gravitee_transaction_id:
-                            host:
-                            scheme:
-                            method:
-                            uri:
-                            status:
-                            request_time:
-                            upstream_status:
-                            upstream_response_time:
-                        - label_keep:
-                            values:
-                              - app_kubernetes_io_name
-                              - container
-                              - instance
-                              - job
-                              - level
-                              - namespace
-                              - pod
-                              - service_name
-                              - service_namespace
-                              - deployment_environment
-                              - deployment_environment_name
-                              - k8s_pod_name
-                              - k8s_namespace_name
-                              - k8s_deployment_name
-                              - k8s_statefulset_name
-                              - k8s_daemonset_name
-                              - k8s_cronjob_name
-                              - k8s_job_name
-                              - k8s_node_name
-                              - trace_id
-                              - span_id
-                              - traceparent
-                              - remote_addr
-                              - x_forwarded_for
-                              - x_forwarded_host
-                              - x_forwarded_proto
-                              - x_real_ip
-                              - x_client_ip
-                              - user_agent
-                              - x_user_email
-                              - x_user_id
-                              - x_user_issuer
-                              - x_user_username
-                              - x_gravitee_request_id
-                              - x_gravitee_transaction_id
-                              - host
-                              - scheme
-                              - method
-                              - uri
-                              - status
-                              - request_time
-                              - upstream_status
-                              - upstream_response_time
-                    discovery.relabel.filtered_pods_with_paths:
-                      rules:
-                        - source_labels:
-                            - __meta_kubernetes_namespace
-                            - __meta_kubernetes_pod_name
-                            - __meta_kubernetes_pod_uid
-                            - __meta_kubernetes_pod_container_name
-                          separator: "_"
-                          action: replace
-                          replacement: "/var/log/pods/$1_$2_$3/$4/*.log"
-                          target_label: __path__
-                  feature.node_logs:
-                    journal_path: /var/log/journal
-                    matchers:
-                      - "_SYSTEMD_UNIT=kubelet.service"
-                      - "_SYSTEMD_UNIT=containerd.service"
-                      - "_SYSTEMD_UNIT=networkd-dispatcher.service"
+          controller:
+            podAnnotations:
+              reloader.stakater.com/auto: "true"
             extraEnv:
               - name: OO_AUTH_HEADER
                 valueFrom:
