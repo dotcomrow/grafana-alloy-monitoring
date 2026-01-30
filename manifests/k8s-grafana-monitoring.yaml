@@ -116,6 +116,12 @@ spec:
             protocol: grpc
             auth:
               type: none
+            processors:
+              transform:
+                logs:
+                  logFrom:
+                    - 'set(trace_id, attributes["trace_id"]) where attributes["trace_id"] != nil'
+                    - 'set(span_id, attributes["span_id"]) where attributes["span_id"] != nil'
             extraHeaders:
               organization: default
               stream-name: k8s_pod_logs
@@ -132,6 +138,12 @@ spec:
             protocol: grpc
             auth:
               type: none
+            processors:
+              transform:
+                logs:
+                  logFrom:
+                    - 'set(trace_id, attributes["trace_id"]) where attributes["trace_id"] != nil'
+                    - 'set(span_id, attributes["span_id"]) where attributes["span_id"] != nil'
             extraHeaders:
               organization: default
               stream-name: default
