@@ -221,13 +221,14 @@ spec:
                     loki.process.pod_logs:
                       stages:
                         - json:
-                            source: log
                             expressions:
                               trace_id: trace_id
                               span_id: span_id
                               traceparent: traceparent
                               remote_addr: remote_addr
                               x_forwarded_for: x_forwarded_for
+                              x_forwarded_host: x_forwarded_host
+                              x_forwarded_proto: x_forwarded_proto
                               x_real_ip: x_real_ip
                               x_client_ip: x_client_ip
                               user_agent: user_agent
@@ -251,6 +252,8 @@ spec:
                             traceparent:
                             remote_addr:
                             x_forwarded_for:
+                            x_forwarded_host:
+                            x_forwarded_proto:
                             x_real_ip:
                             x_client_ip:
                             user_agent:
@@ -294,6 +297,8 @@ spec:
                               - traceparent
                               - remote_addr
                               - x_forwarded_for
+                              - x_forwarded_host
+                              - x_forwarded_proto
                               - x_real_ip
                               - x_client_ip
                               - user_agent
