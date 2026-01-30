@@ -161,25 +161,51 @@ spec:
               stage.json {
                 source = "body"
                 expressions = {
-                  traceparent = "entrypointRequest.headers.traceparent[0]",
-                  trace_id = "entrypointRequest.headers.trace_id[0]",
-                  span_id = "entrypointRequest.headers.span_id[0]",
+                  traceparent = "entrypointRequest.headers.traceparent",
+                  trace_id = "entrypointRequest.headers.trace_id",
+                  span_id = "entrypointRequest.headers.span_id",
+                  x_forwarded_for = "entrypointRequest.headers.\"x-forwarded-for\"",
+                  x_forwarded_host = "entrypointRequest.headers.\"x-forwarded-host\"",
+                  x_forwarded_proto = "entrypointRequest.headers.\"x-forwarded-proto\"",
+                  x_real_ip = "entrypointRequest.headers.\"x-real-ip\"",
+                  x_client_ip = "entrypointRequest.headers.\"x-client-ip\"",
+                  user_agent = "entrypointRequest.headers.\"user-agent\"",
+                  x_user_email = "entrypointRequest.headers.\"x-user-email\"",
+                  x_user_id = "entrypointRequest.headers.\"x-user-id\"",
+                  x_user_issuer = "entrypointRequest.headers.\"x-user-issuer\"",
+                  x_user_username = "entrypointRequest.headers.\"x-user-username\"",
+                  gravitee_request_id = "entrypointRequest.headers.\"x-gravitee-request-id\" || entrypointRequest.headers.\"X-Gravitee-Request-Id\"",
+                  gravitee_transaction_id = "entrypointRequest.headers.\"x-gravitee-transaction-id\" || entrypointRequest.headers.\"X-Gravitee-Transaction-Id\"",
                 }
               }
               stage.regex {
                 source = "traceparent"
-                expression = "^[0-9a-f]{2}-(?P<trace_id>[0-9a-f]{32})-(?P<span_id>[0-9a-f]{16})-"
+                expression = "[0-9a-f]{2}-(?P<trace_id>[0-9a-f]{32})-(?P<span_id>[0-9a-f]{16})-[0-9a-f]{2}"
               }
               stage.labels {
                 values = {
                   traceparent = "",
                   trace_id = "",
                   span_id = "",
+                  x_forwarded_for = "",
+                  x_forwarded_host = "",
+                  x_forwarded_proto = "",
+                  x_real_ip = "",
+                  x_client_ip = "",
+                  user_agent = "",
+                  x_user_email = "",
+                  x_user_id = "",
+                  x_user_issuer = "",
+                  x_user_username = "",
+                  gravitee_request_id = "",
+                  gravitee_transaction_id = "",
                 }
               }
             }
             stage.json {
+
               expressions = {
+
                 trace_id = "trace_id",
                 span_id = "span_id",
                 traceparent = "traceparent",
