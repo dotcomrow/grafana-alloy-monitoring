@@ -212,7 +212,7 @@ spec:
             traces:
               enabled: true
             logs:
-              enabled: true
+              enabled: false
             metrics:
               enabled: true
         clusterMetrics:
@@ -225,7 +225,6 @@ spec:
           enabled: true
           destinations:
             - openobserve-pod-logs
-            - openobserve-otlp
           extraLogProcessingStages: |
             stage.match {
               selector = "{container=\"gravitee-reporter-tail\"}"
@@ -646,6 +645,13 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: spec.nodeName
+            resources:
+              requests:
+                cpu: 500m
+                memory: 256Mi
+              limits:
+                cpu: 3000m
+                memory: 512Mi
             mounts:
               extra:
                 - name: journal
