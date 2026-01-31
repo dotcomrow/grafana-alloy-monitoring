@@ -131,6 +131,13 @@ spec:
               transform:
                 logs:
                   log:
+                    - 'merge_maps(cache, ParseJSON(body), "upsert") where IsMatch(body, "^\\{")'
+                    - 'set(resource.attributes["trace_id"], cache["traceId"]) where cache["traceId"] != nil'
+                    - 'set(resource.attributes["span_id"], cache["spanId"]) where cache["spanId"] != nil'
+                    - 'set(resource.attributes["trace_id"], cache["entrypointRequest"]["headers"]["x-trace-id"][0]) where cache["entrypointRequest"]["headers"]["x-trace-id"][0] != nil'
+                    - 'set(resource.attributes["span_id"], cache["entrypointRequest"]["headers"]["x-span-id"][0]) where cache["entrypointRequest"]["headers"]["x-span-id"][0] != nil'
+                    - 'set(resource.attributes["trace_id"], cache["endpointRequest"]["headers"]["x-trace-id"][0]) where resource.attributes["trace_id"] == nil and cache["endpointRequest"]["headers"]["x-trace-id"][0] != nil'
+                    - 'set(resource.attributes["span_id"], cache["endpointRequest"]["headers"]["x-span-id"][0]) where resource.attributes["span_id"] == nil and cache["endpointRequest"]["headers"]["x-span-id"][0] != nil'
                     - 'set(attributes["trace_id"], attributes["loki.attribute.labels.trace_id"]) where attributes["trace_id"] == nil and attributes["loki.attribute.labels.trace_id"] != nil'
                     - 'set(attributes["span_id"], attributes["loki.attribute.labels.span_id"]) where attributes["span_id"] == nil and attributes["loki.attribute.labels.span_id"] != nil'
                     - 'set(attributes["traceparent"], attributes["loki.attribute.labels.traceparent"]) where attributes["traceparent"] == nil and attributes["loki.attribute.labels.traceparent"] != nil'
@@ -173,6 +180,13 @@ spec:
               transform:
                 logs:
                   log:
+                    - 'merge_maps(cache, ParseJSON(body), "upsert") where IsMatch(body, "^\\{")'
+                    - 'set(resource.attributes["trace_id"], cache["traceId"]) where cache["traceId"] != nil'
+                    - 'set(resource.attributes["span_id"], cache["spanId"]) where cache["spanId"] != nil'
+                    - 'set(resource.attributes["trace_id"], cache["entrypointRequest"]["headers"]["x-trace-id"][0]) where cache["entrypointRequest"]["headers"]["x-trace-id"][0] != nil'
+                    - 'set(resource.attributes["span_id"], cache["entrypointRequest"]["headers"]["x-span-id"][0]) where cache["entrypointRequest"]["headers"]["x-span-id"][0] != nil'
+                    - 'set(resource.attributes["trace_id"], cache["endpointRequest"]["headers"]["x-trace-id"][0]) where resource.attributes["trace_id"] == nil and cache["endpointRequest"]["headers"]["x-trace-id"][0] != nil'
+                    - 'set(resource.attributes["span_id"], cache["endpointRequest"]["headers"]["x-span-id"][0]) where resource.attributes["span_id"] == nil and cache["endpointRequest"]["headers"]["x-span-id"][0] != nil'
                     - 'set(attributes["trace_id"], attributes["loki.attribute.labels.trace_id"]) where attributes["trace_id"] == nil and attributes["loki.attribute.labels.trace_id"] != nil'
                     - 'set(attributes["span_id"], attributes["loki.attribute.labels.span_id"]) where attributes["span_id"] == nil and attributes["loki.attribute.labels.span_id"] != nil'
                     - 'set(attributes["traceparent"], attributes["loki.attribute.labels.traceparent"]) where attributes["traceparent"] == nil and attributes["loki.attribute.labels.traceparent"] != nil'
