@@ -132,6 +132,8 @@ spec:
                 logs:
                   log:
                     - 'merge_maps(cache, ParseJSON(body), "upsert") where IsMatch(body, "^\\{")'
+                    - 'set(attributes["trace_id"], cache["trace_id"]) where cache["trace_id"] != nil'
+                    - 'set(attributes["span_id"], cache["span_id"]) where cache["span_id"] != nil'
                     - 'set(resource.attributes["trace_id"], cache["traceId"]) where cache["traceId"] != nil'
                     - 'set(resource.attributes["span_id"], cache["spanId"]) where cache["spanId"] != nil'
                     - 'set(resource.attributes["trace_id"], cache["entrypointRequest"]["headers"]["x-trace-id"][0]) where cache["entrypointRequest"]["headers"]["x-trace-id"][0] != nil'
@@ -181,6 +183,8 @@ spec:
                 logs:
                   log:
                     - 'merge_maps(cache, ParseJSON(body), "upsert") where IsMatch(body, "^\\{")'
+                    - 'set(attributes["trace_id"], cache["trace_id"]) where cache["trace_id"] != nil'
+                    - 'set(attributes["span_id"], cache["span_id"]) where cache["span_id"] != nil'
                     - 'set(resource.attributes["trace_id"], cache["traceId"]) where cache["traceId"] != nil'
                     - 'set(resource.attributes["span_id"], cache["spanId"]) where cache["spanId"] != nil'
                     - 'set(resource.attributes["trace_id"], cache["entrypointRequest"]["headers"]["x-trace-id"][0]) where cache["entrypointRequest"]["headers"]["x-trace-id"][0] != nil'
