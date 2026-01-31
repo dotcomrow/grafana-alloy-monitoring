@@ -300,8 +300,8 @@ spec:
                 }
               }
             }
-                        stage.match {
-              selector = "{container="apisix"}"
+            stage.match {
+              selector = "{container=\"apisix\"}"
               stage.json {
                 source = "log"
                 expressions = {
@@ -382,7 +382,7 @@ spec:
                 }
               }
             }
-stage.match {
+            stage.match {
               selector = "{container=\"gravitee-gateway\"}"
               stage.regex {
                 source = "body"
@@ -401,14 +401,14 @@ stage.match {
                 }
               }
             }
-                        stage.match {
-              selector = "{container="hasura"}"
+            stage.match {
+              selector = "{container=\"hasura\"}"
               stage.json {
                 source = "log"
                 expressions = {
-                  traceparent = "detail.http_info.headers.traceparent || detail.http_info.headers."Traceparent" || detail.request.headers.traceparent || detail.request.headers."Traceparent" || detail.user_vars."x-hasura-traceparent" || detail.user_vars."X-Hasura-Traceparent"",
-                  trace_id = "detail.http_info.headers."x-trace-id" || detail.http_info.headers."X-Trace-Id" || detail.request.headers."x-trace-id" || detail.request.headers."X-Trace-Id"",
-                  span_id = "detail.http_info.headers."x-span-id" || detail.http_info.headers."X-Span-Id" || detail.request.headers."x-span-id" || detail.request.headers."X-Span-Id"",
+                  traceparent = "detail.http_info.headers.traceparent || detail.http_info.headers.\"Traceparent\" || detail.request.headers.traceparent || detail.request.headers.\"Traceparent\" || detail.user_vars.\"x-hasura-traceparent\" || detail.user_vars.\"X-Hasura-Traceparent\"",
+                  trace_id = "detail.http_info.headers.\"x-trace-id\" || detail.http_info.headers.\"X-Trace-Id\" || detail.request.headers.\"x-trace-id\" || detail.request.headers.\"X-Trace-Id\"",
+                  span_id = "detail.http_info.headers.\"x-span-id\" || detail.http_info.headers.\"X-Span-Id\" || detail.request.headers.\"x-span-id\" || detail.request.headers.\"X-Span-Id\"",
                   remote_addr = "detail.http_info.ip",
                   method = "detail.http_info.method",
                   uri = "detail.http_info.url",
@@ -445,7 +445,7 @@ stage.match {
                 }
               }
             }
-stage.match {
+            stage.match {
               selector = "{container!=\"gravitee-reporter-tail\",container!=\"apisix\",container!=\"hasura\"}"
               stage.json {
                 expressions = {
