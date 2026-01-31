@@ -300,8 +300,8 @@ spec:
                 }
               }
             }
-            stage.match {
-              selector = "{container=\"apisix\"}"
+                        stage.match {
+              selector = "{container="apisix"}"
               stage.json {
                 source = "log"
                 expressions = {
@@ -324,14 +324,14 @@ spec:
                   upstream_status = "upstream_status",
                   upstream_response_time = "upstream_response_time",
                 }
-              stage.regex {
-                source = "log"
-                expression = "\"trace_id\"\s*:\s*\"(?P<trace_id>[0-9a-f]{32})\""
               }
               stage.regex {
                 source = "log"
-                expression = "\"span_id\"\s*:\s*\"(?P<span_id>[0-9a-f]{16})\""
+                expression = "\"trace_id\"[[:space:]]*:[[:space:]]*\"(?P<trace_id>[0-9a-f]{32})\""
               }
+              stage.regex {
+                source = "log"
+                expression = "\"span_id\"[[:space:]]*:[[:space:]]*\"(?P<span_id>[0-9a-f]{16})\""
               }
               stage.regex {
                 source = "traceparent"
@@ -382,7 +382,7 @@ spec:
                 }
               }
             }
-            stage.match {
+stage.match {
               selector = "{container=\"gravitee-gateway\"}"
               stage.regex {
                 source = "body"
@@ -401,32 +401,32 @@ spec:
                 }
               }
             }
-            stage.match {
-              selector = "{container=\"hasura\"}"
+                        stage.match {
+              selector = "{container="hasura"}"
               stage.json {
                 source = "log"
                 expressions = {
-                  traceparent = "detail.http_info.headers.traceparent || detail.http_info.headers.\"Traceparent\" || detail.request.headers.traceparent || detail.request.headers.\"Traceparent\" || detail.user_vars.\"x-hasura-traceparent\" || detail.user_vars.\"X-Hasura-Traceparent\"",
-                  trace_id = "detail.http_info.headers.\"x-trace-id\" || detail.http_info.headers.\"X-Trace-Id\" || detail.request.headers.\"x-trace-id\" || detail.request.headers.\"X-Trace-Id\"",
-                  span_id = "detail.http_info.headers.\"x-span-id\" || detail.http_info.headers.\"X-Span-Id\" || detail.request.headers.\"x-span-id\" || detail.request.headers.\"X-Span-Id\"",
+                  traceparent = "detail.http_info.headers.traceparent || detail.http_info.headers."Traceparent" || detail.request.headers.traceparent || detail.request.headers."Traceparent" || detail.user_vars."x-hasura-traceparent" || detail.user_vars."X-Hasura-Traceparent"",
+                  trace_id = "detail.http_info.headers."x-trace-id" || detail.http_info.headers."X-Trace-Id" || detail.request.headers."x-trace-id" || detail.request.headers."X-Trace-Id"",
+                  span_id = "detail.http_info.headers."x-span-id" || detail.http_info.headers."X-Span-Id" || detail.request.headers."x-span-id" || detail.request.headers."X-Span-Id"",
                   remote_addr = "detail.http_info.ip",
                   method = "detail.http_info.method",
                   uri = "detail.http_info.url",
                   status = "detail.http_info.status",
                   request_id = "detail.request_id",
                 }
-              stage.regex {
-                source = "log"
-                expression = "traceparent\s*[:=]\s*\"(?P<traceparent>[0-9a-f]{2}-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2})\""
               }
               stage.regex {
                 source = "log"
-                expression = "\"trace_id\"\s*:\s*\"(?P<trace_id>[0-9a-f]{32})\""
+                expression = "traceparent[[:space:]]*[:=][[:space:]]*\"(?P<traceparent>[0-9a-f]{2}-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2})\""
               }
               stage.regex {
                 source = "log"
-                expression = "\"span_id\"\s*:\s*\"(?P<span_id>[0-9a-f]{16})\""
+                expression = "\"trace_id\"[[:space:]]*:[[:space:]]*\"(?P<trace_id>[0-9a-f]{32})\""
               }
+              stage.regex {
+                source = "log"
+                expression = "\"span_id\"[[:space:]]*:[[:space:]]*\"(?P<span_id>[0-9a-f]{16})\""
               }
               stage.regex {
                 source = "traceparent"
@@ -445,7 +445,7 @@ spec:
                 }
               }
             }
-            stage.match {
+stage.match {
               selector = "{container!=\"gravitee-reporter-tail\",container!=\"apisix\",container!=\"hasura\"}"
               stage.json {
                 expressions = {
