@@ -588,35 +588,17 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: metadata.name
-            resources:
-              requests:
-                cpu: 50m
-                memory: 256Mi
-              limits:
-                cpu: 200m
-                memory: 512Mi
+            resources: {}
             remoteConfig:
               enabled: false
           configReloader:
-            resources:
-              requests:
-                cpu: 5m
-                memory: 32Mi
-              limits:
-                cpu: 50m
-                memory: 256Mi
+            resources: {}
         alloy-logs:
           enabled: true
           controller:
             podAnnotations:
               reloader.stakater.com/auto: "true"
-            resources:
-              requests:
-                cpu: 250m
-                memory: 256Mi
-              limits:
-                cpu: 500m
-                memory: 512Mi
+            resources: {}
             remoteConfig:
               enabled: false
             volumes:
@@ -645,26 +627,14 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: spec.nodeName
-            resources:
-              requests:
-                cpu: 500m
-                memory: 256Mi
-              limits:
-                cpu: 3000m
-                memory: 512Mi
+            resources: {}
             mounts:
               extra:
                 - name: journal
                   mountPath: /var/log/journal
                   readOnly: true
           configReloader:
-            resources:
-              requests:
-                cpu: 5m
-                memory: 32Mi
-              limits:
-                cpu: 50m
-                memory: 256Mi
+            resources: {}
         alloy-receiver:
           enabled: true
           alloy:
@@ -701,23 +671,11 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: spec.nodeName
-            resources:
-              requests:
-                cpu: 100m
-                memory: 256Mi
-              limits:
-                cpu: 300m
-                memory: 512Mi
+            resources: {}
             remoteConfig:
               enabled: false
           configReloader:
-            resources:
-              requests:
-                cpu: 5m
-                memory: 32Mi
-              limits:
-                cpu: 50m
-                memory: 256Mi
+            resources: {}
   destination:
     server: https://kubernetes.default.svc
     namespace: logging-and-monitoring
