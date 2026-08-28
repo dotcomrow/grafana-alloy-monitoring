@@ -588,11 +588,22 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: metadata.name
-            resources: {}
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
             remoteConfig:
               enabled: false
           configReloader:
-            resources: {}
+            resources:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                cpu: 50m
+                memory: 64Mi
         alloy-logs:
           enabled: true
           controller:
@@ -627,14 +638,25 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: spec.nodeName
-            resources: {}
+            resources:
+              requests:
+                cpu: 500m
+                memory: 512Mi
+              limits:
+                memory: 1Gi
             mounts:
               extra:
                 - name: journal
                   mountPath: /var/log/journal
                   readOnly: true
           configReloader:
-            resources: {}
+            resources:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                cpu: 50m
+                memory: 64Mi
         alloy-receiver:
           enabled: true
           alloy:
@@ -671,11 +693,22 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: spec.nodeName
-            resources: {}
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
             remoteConfig:
               enabled: false
           configReloader:
-            resources: {}
+            resources:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                cpu: 50m
+                memory: 64Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: logging-and-monitoring
