@@ -128,6 +128,24 @@ spec:
                   - key: traceparent
                     action: upsert
                     fromAttribute: loki.attribute.labels.traceparent
+                  - key: gravitee_request_id
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.gravitee_request_id
+                  - key: gravitee_transaction_id
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.gravitee_transaction_id
+                  - key: gravitee_client_identifier
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.gravitee_client_identifier
+                  - key: x_gravitee_request_id
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.x_gravitee_request_id
+                  - key: x_gravitee_transaction_id
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.x_gravitee_transaction_id
+                  - key: x_gravitee_client_identifier
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.x_gravitee_client_identifier
               transform:
                 logs:
                   log:
@@ -143,6 +161,12 @@ spec:
                     - 'set(attributes["trace_id"], attributes["loki.attribute.labels.trace_id"]) where attributes["trace_id"] == nil and attributes["loki.attribute.labels.trace_id"] != nil'
                     - 'set(attributes["span_id"], attributes["loki.attribute.labels.span_id"]) where attributes["span_id"] == nil and attributes["loki.attribute.labels.span_id"] != nil'
                     - 'set(attributes["traceparent"], attributes["loki.attribute.labels.traceparent"]) where attributes["traceparent"] == nil and attributes["loki.attribute.labels.traceparent"] != nil'
+                    - 'set(attributes["gravitee_request_id"], attributes["loki.attribute.labels.gravitee_request_id"]) where attributes["gravitee_request_id"] == nil and attributes["loki.attribute.labels.gravitee_request_id"] != nil'
+                    - 'set(attributes["gravitee_transaction_id"], attributes["loki.attribute.labels.gravitee_transaction_id"]) where attributes["gravitee_transaction_id"] == nil and attributes["loki.attribute.labels.gravitee_transaction_id"] != nil'
+                    - 'set(attributes["gravitee_client_identifier"], attributes["loki.attribute.labels.gravitee_client_identifier"]) where attributes["gravitee_client_identifier"] == nil and attributes["loki.attribute.labels.gravitee_client_identifier"] != nil'
+                    - 'set(attributes["x_gravitee_request_id"], attributes["gravitee_request_id"]) where attributes["x_gravitee_request_id"] == nil and attributes["gravitee_request_id"] != nil'
+                    - 'set(attributes["x_gravitee_transaction_id"], attributes["gravitee_transaction_id"]) where attributes["x_gravitee_transaction_id"] == nil and attributes["gravitee_transaction_id"] != nil'
+                    - 'set(attributes["x_gravitee_client_identifier"], attributes["gravitee_client_identifier"]) where attributes["x_gravitee_client_identifier"] == nil and attributes["gravitee_client_identifier"] != nil'
                     - 'set(trace_id, attributes["trace_id"]) where trace_id == nil and attributes["trace_id"] != nil'
                     - 'set(span_id, attributes["span_id"]) where span_id == nil and attributes["span_id"] != nil'
                     - 'set(trace_id, attributes["loki.attribute.labels.trace_id"]) where trace_id == nil and attributes["loki.attribute.labels.trace_id"] != nil'
@@ -179,6 +203,24 @@ spec:
                   - key: traceparent
                     action: upsert
                     fromAttribute: loki.attribute.labels.traceparent
+                  - key: gravitee_request_id
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.gravitee_request_id
+                  - key: gravitee_transaction_id
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.gravitee_transaction_id
+                  - key: gravitee_client_identifier
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.gravitee_client_identifier
+                  - key: x_gravitee_request_id
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.x_gravitee_request_id
+                  - key: x_gravitee_transaction_id
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.x_gravitee_transaction_id
+                  - key: x_gravitee_client_identifier
+                    action: upsert
+                    fromAttribute: loki.attribute.labels.x_gravitee_client_identifier
               transform:
                 logs:
                   log:
@@ -194,6 +236,12 @@ spec:
                     - 'set(attributes["trace_id"], attributes["loki.attribute.labels.trace_id"]) where attributes["trace_id"] == nil and attributes["loki.attribute.labels.trace_id"] != nil'
                     - 'set(attributes["span_id"], attributes["loki.attribute.labels.span_id"]) where attributes["span_id"] == nil and attributes["loki.attribute.labels.span_id"] != nil'
                     - 'set(attributes["traceparent"], attributes["loki.attribute.labels.traceparent"]) where attributes["traceparent"] == nil and attributes["loki.attribute.labels.traceparent"] != nil'
+                    - 'set(attributes["gravitee_request_id"], attributes["loki.attribute.labels.gravitee_request_id"]) where attributes["gravitee_request_id"] == nil and attributes["loki.attribute.labels.gravitee_request_id"] != nil'
+                    - 'set(attributes["gravitee_transaction_id"], attributes["loki.attribute.labels.gravitee_transaction_id"]) where attributes["gravitee_transaction_id"] == nil and attributes["loki.attribute.labels.gravitee_transaction_id"] != nil'
+                    - 'set(attributes["gravitee_client_identifier"], attributes["loki.attribute.labels.gravitee_client_identifier"]) where attributes["gravitee_client_identifier"] == nil and attributes["loki.attribute.labels.gravitee_client_identifier"] != nil'
+                    - 'set(attributes["x_gravitee_request_id"], attributes["gravitee_request_id"]) where attributes["x_gravitee_request_id"] == nil and attributes["gravitee_request_id"] != nil'
+                    - 'set(attributes["x_gravitee_transaction_id"], attributes["gravitee_transaction_id"]) where attributes["x_gravitee_transaction_id"] == nil and attributes["gravitee_transaction_id"] != nil'
+                    - 'set(attributes["x_gravitee_client_identifier"], attributes["gravitee_client_identifier"]) where attributes["x_gravitee_client_identifier"] == nil and attributes["gravitee_client_identifier"] != nil'
                     - 'set(trace_id, attributes["trace_id"]) where trace_id == nil and attributes["trace_id"] != nil'
                     - 'set(span_id, attributes["span_id"]) where span_id == nil and attributes["span_id"] != nil'
                     - 'set(trace_id, attributes["loki.attribute.labels.trace_id"]) where trace_id == nil and attributes["loki.attribute.labels.trace_id"] != nil'
@@ -244,8 +292,12 @@ spec:
                   x_user_id = "entrypointRequest.headers.\"x-user-id\"[0]",
                   x_user_issuer = "entrypointRequest.headers.\"x-user-issuer\"[0]",
                   x_user_username = "entrypointRequest.headers.\"x-user-username\"[0]",
-                  gravitee_request_id = "entrypointRequest.headers.\"x-gravitee-request-id\"[0] || entrypointRequest.headers.\"X-Gravitee-Request-Id\"[0]",
-                  gravitee_transaction_id = "entrypointRequest.headers.\"x-gravitee-transaction-id\"[0] || entrypointRequest.headers.\"X-Gravitee-Transaction-Id\"[0]",
+                  gravitee_request_id = "requestId || entrypointRequest.headers.\"x-gravitee-request-id\"[0] || entrypointRequest.headers.\"X-Gravitee-Request-Id\"[0] || endpointRequest.headers.\"x-gravitee-request-id\"[0] || endpointRequest.headers.\"X-Gravitee-Request-Id\"[0] || entrypointResponse.headers.\"x-gravitee-request-id\"[0] || entrypointResponse.headers.\"X-Gravitee-Request-Id\"[0] || endpointResponse.headers.\"x-gravitee-request-id\"[0] || endpointResponse.headers.\"X-Gravitee-Request-Id\"[0]",
+                  gravitee_transaction_id = "requestId || entrypointRequest.headers.\"x-gravitee-transaction-id\"[0] || entrypointRequest.headers.\"X-Gravitee-Transaction-Id\"[0] || endpointRequest.headers.\"x-gravitee-transaction-id\"[0] || endpointRequest.headers.\"X-Gravitee-Transaction-Id\"[0] || entrypointResponse.headers.\"x-gravitee-transaction-id\"[0] || entrypointResponse.headers.\"X-Gravitee-Transaction-Id\"[0] || endpointResponse.headers.\"x-gravitee-transaction-id\"[0] || endpointResponse.headers.\"X-Gravitee-Transaction-Id\"[0]",
+                  gravitee_client_identifier = "entrypointRequest.headers.\"x-gravitee-client-identifier\"[0] || entrypointRequest.headers.\"X-Gravitee-Client-Identifier\"[0] || endpointRequest.headers.\"x-gravitee-client-identifier\"[0] || endpointRequest.headers.\"X-Gravitee-Client-Identifier\"[0] || entrypointResponse.headers.\"x-gravitee-client-identifier\"[0] || entrypointResponse.headers.\"X-Gravitee-Client-Identifier\"[0] || endpointResponse.headers.\"x-gravitee-client-identifier\"[0] || endpointResponse.headers.\"X-Gravitee-Client-Identifier\"[0]",
+                  x_gravitee_request_id = "requestId || entrypointRequest.headers.\"x-gravitee-request-id\"[0] || entrypointRequest.headers.\"X-Gravitee-Request-Id\"[0] || endpointRequest.headers.\"x-gravitee-request-id\"[0] || endpointRequest.headers.\"X-Gravitee-Request-Id\"[0] || entrypointResponse.headers.\"x-gravitee-request-id\"[0] || entrypointResponse.headers.\"X-Gravitee-Request-Id\"[0] || endpointResponse.headers.\"x-gravitee-request-id\"[0] || endpointResponse.headers.\"X-Gravitee-Request-Id\"[0]",
+                  x_gravitee_transaction_id = "requestId || entrypointRequest.headers.\"x-gravitee-transaction-id\"[0] || entrypointRequest.headers.\"X-Gravitee-Transaction-Id\"[0] || endpointRequest.headers.\"x-gravitee-transaction-id\"[0] || endpointRequest.headers.\"X-Gravitee-Transaction-Id\"[0] || entrypointResponse.headers.\"x-gravitee-transaction-id\"[0] || entrypointResponse.headers.\"X-Gravitee-Transaction-Id\"[0] || endpointResponse.headers.\"x-gravitee-transaction-id\"[0] || endpointResponse.headers.\"X-Gravitee-Transaction-Id\"[0]",
+                  x_gravitee_client_identifier = "entrypointRequest.headers.\"x-gravitee-client-identifier\"[0] || entrypointRequest.headers.\"X-Gravitee-Client-Identifier\"[0] || endpointRequest.headers.\"x-gravitee-client-identifier\"[0] || endpointRequest.headers.\"X-Gravitee-Client-Identifier\"[0] || entrypointResponse.headers.\"x-gravitee-client-identifier\"[0] || entrypointResponse.headers.\"X-Gravitee-Client-Identifier\"[0] || endpointResponse.headers.\"x-gravitee-client-identifier\"[0] || endpointResponse.headers.\"X-Gravitee-Client-Identifier\"[0]",
                 }
               }
               stage.regex {
@@ -279,6 +331,10 @@ spec:
                   x_user_username = "",
                   gravitee_request_id = "",
                   gravitee_transaction_id = "",
+                  gravitee_client_identifier = "",
+                  x_gravitee_request_id = "",
+                  x_gravitee_transaction_id = "",
+                  x_gravitee_client_identifier = "",
                 }
               }
               stage.structured_metadata {
@@ -300,6 +356,10 @@ spec:
                   x_user_username = "",
                   gravitee_request_id = "",
                   gravitee_transaction_id = "",
+                  gravitee_client_identifier = "",
+                  x_gravitee_request_id = "",
+                  x_gravitee_transaction_id = "",
+                  x_gravitee_client_identifier = "",
                 }
               }
             }
@@ -318,6 +378,12 @@ spec:
                   x_real_ip = "x_real_ip",
                   x_client_ip = "x_client_ip",
                   user_agent = "user_agent",
+                  gravitee_request_id = "gravitee_request_id || x_gravitee_request_id",
+                  gravitee_transaction_id = "gravitee_transaction_id || x_gravitee_transaction_id",
+                  gravitee_client_identifier = "gravitee_client_identifier || x_gravitee_client_identifier",
+                  x_gravitee_request_id = "x_gravitee_request_id || gravitee_request_id",
+                  x_gravitee_transaction_id = "x_gravitee_transaction_id || gravitee_transaction_id",
+                  x_gravitee_client_identifier = "x_gravitee_client_identifier || gravitee_client_identifier",
                   host = "host",
                   scheme = "scheme",
                   method = "method",
@@ -352,6 +418,12 @@ spec:
                   x_real_ip = "",
                   x_client_ip = "",
                   user_agent = "",
+                  gravitee_request_id = "",
+                  gravitee_transaction_id = "",
+                  gravitee_client_identifier = "",
+                  x_gravitee_request_id = "",
+                  x_gravitee_transaction_id = "",
+                  x_gravitee_client_identifier = "",
                   host = "",
                   scheme = "",
                   method = "",
@@ -374,6 +446,12 @@ spec:
                   x_real_ip = "",
                   x_client_ip = "",
                   user_agent = "",
+                  gravitee_request_id = "",
+                  gravitee_transaction_id = "",
+                  gravitee_client_identifier = "",
+                  x_gravitee_request_id = "",
+                  x_gravitee_transaction_id = "",
+                  x_gravitee_client_identifier = "",
                   host = "",
                   scheme = "",
                   method = "",
@@ -468,6 +546,10 @@ spec:
                   x_user_username = "x_user_username",
                   gravitee_request_id = "requestId",
                   gravitee_transaction_id = "requestId",
+                  gravitee_client_identifier = "gravitee_client_identifier || x_gravitee_client_identifier",
+                  x_gravitee_request_id = "x_gravitee_request_id || gravitee_request_id || requestId",
+                  x_gravitee_transaction_id = "x_gravitee_transaction_id || gravitee_transaction_id || requestId",
+                  x_gravitee_client_identifier = "x_gravitee_client_identifier || gravitee_client_identifier",
                   host = "host",
                   scheme = "scheme",
                   method = "method",
@@ -496,6 +578,10 @@ spec:
                   x_user_username = "",
                   gravitee_request_id = "",
                   gravitee_transaction_id = "",
+                  gravitee_client_identifier = "",
+                  x_gravitee_request_id = "",
+                  x_gravitee_transaction_id = "",
+                  x_gravitee_client_identifier = "",
                   host = "",
                   scheme = "",
                   method = "",
@@ -541,6 +627,10 @@ spec:
             - x_user_username
             - gravitee_request_id
             - gravitee_transaction_id
+            - gravitee_client_identifier
+            - x_gravitee_request_id
+            - x_gravitee_transaction_id
+            - x_gravitee_client_identifier
             - host
             - scheme
             - method
