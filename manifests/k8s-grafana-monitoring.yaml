@@ -149,15 +149,6 @@ spec:
               transform:
                 logs:
                   log:
-                    - 'merge_maps(cache, ParseJSON(body), "upsert") where IsMatch(body, "^\\{") and not IsMatch(body, "\\x00")'
-                    - 'set(attributes["trace_id"], cache["trace_id"]) where cache["trace_id"] != nil'
-                    - 'set(attributes["span_id"], cache["span_id"]) where cache["span_id"] != nil'
-                    - 'set(resource.attributes["trace_id"], cache["traceId"]) where cache["traceId"] != nil'
-                    - 'set(resource.attributes["span_id"], cache["spanId"]) where cache["spanId"] != nil'
-                    - 'set(resource.attributes["trace_id"], cache["entrypointRequest"]["headers"]["x-trace-id"][0]) where cache["entrypointRequest"]["headers"]["x-trace-id"][0] != nil'
-                    - 'set(resource.attributes["span_id"], cache["entrypointRequest"]["headers"]["x-span-id"][0]) where cache["entrypointRequest"]["headers"]["x-span-id"][0] != nil'
-                    - 'set(resource.attributes["trace_id"], cache["endpointRequest"]["headers"]["x-trace-id"][0]) where resource.attributes["trace_id"] == nil and cache["endpointRequest"]["headers"]["x-trace-id"][0] != nil'
-                    - 'set(resource.attributes["span_id"], cache["endpointRequest"]["headers"]["x-span-id"][0]) where resource.attributes["span_id"] == nil and cache["endpointRequest"]["headers"]["x-span-id"][0] != nil'
                     - 'set(attributes["trace_id"], attributes["loki.attribute.labels.trace_id"]) where attributes["trace_id"] == nil and attributes["loki.attribute.labels.trace_id"] != nil'
                     - 'set(attributes["span_id"], attributes["loki.attribute.labels.span_id"]) where attributes["span_id"] == nil and attributes["loki.attribute.labels.span_id"] != nil'
                     - 'set(attributes["traceparent"], attributes["loki.attribute.labels.traceparent"]) where attributes["traceparent"] == nil and attributes["loki.attribute.labels.traceparent"] != nil'
@@ -224,15 +215,6 @@ spec:
               transform:
                 logs:
                   log:
-                    - 'merge_maps(cache, ParseJSON(body), "upsert") where IsMatch(body, "^\\{") and not IsMatch(body, "\\x00")'
-                    - 'set(attributes["trace_id"], cache["trace_id"]) where cache["trace_id"] != nil'
-                    - 'set(attributes["span_id"], cache["span_id"]) where cache["span_id"] != nil'
-                    - 'set(resource.attributes["trace_id"], cache["traceId"]) where cache["traceId"] != nil'
-                    - 'set(resource.attributes["span_id"], cache["spanId"]) where cache["spanId"] != nil'
-                    - 'set(resource.attributes["trace_id"], cache["entrypointRequest"]["headers"]["x-trace-id"][0]) where cache["entrypointRequest"]["headers"]["x-trace-id"][0] != nil'
-                    - 'set(resource.attributes["span_id"], cache["entrypointRequest"]["headers"]["x-span-id"][0]) where cache["entrypointRequest"]["headers"]["x-span-id"][0] != nil'
-                    - 'set(resource.attributes["trace_id"], cache["endpointRequest"]["headers"]["x-trace-id"][0]) where resource.attributes["trace_id"] == nil and cache["endpointRequest"]["headers"]["x-trace-id"][0] != nil'
-                    - 'set(resource.attributes["span_id"], cache["endpointRequest"]["headers"]["x-span-id"][0]) where resource.attributes["span_id"] == nil and cache["endpointRequest"]["headers"]["x-span-id"][0] != nil'
                     - 'set(attributes["trace_id"], attributes["loki.attribute.labels.trace_id"]) where attributes["trace_id"] == nil and attributes["loki.attribute.labels.trace_id"] != nil'
                     - 'set(attributes["span_id"], attributes["loki.attribute.labels.span_id"]) where attributes["span_id"] == nil and attributes["loki.attribute.labels.span_id"] != nil'
                     - 'set(attributes["traceparent"], attributes["loki.attribute.labels.traceparent"]) where attributes["traceparent"] == nil and attributes["loki.attribute.labels.traceparent"] != nil'
@@ -530,8 +512,8 @@ spec:
               selector = "{container!=\"gravitee-reporter-tail\",container!=\"apisix\",container!=\"hasura\"}"
               stage.json {
                 expressions = {
-                  trace_id = "trace_id",
-                  span_id = "span_id",
+                  trace_id = "trace_id || traceId",
+                  span_id = "span_id || spanId",
                   traceparent = "traceparent",
                   remote_addr = "remote_addr",
                   x_forwarded_for = "x_forwarded_for",
