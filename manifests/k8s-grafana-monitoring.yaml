@@ -149,7 +149,7 @@ spec:
               transform:
                 logs:
                   log:
-                    - 'merge_maps(cache, ParseJSON(body), "upsert") where IsMatch(body, "^\\{")'
+                    - 'merge_maps(cache, ParseJSON(body), "upsert") where IsMatch(body, "^\\{") and not IsMatch(body, "\\x00")'
                     - 'set(attributes["trace_id"], cache["trace_id"]) where cache["trace_id"] != nil'
                     - 'set(attributes["span_id"], cache["span_id"]) where cache["span_id"] != nil'
                     - 'set(resource.attributes["trace_id"], cache["traceId"]) where cache["traceId"] != nil'
@@ -224,7 +224,7 @@ spec:
               transform:
                 logs:
                   log:
-                    - 'merge_maps(cache, ParseJSON(body), "upsert") where IsMatch(body, "^\\{")'
+                    - 'merge_maps(cache, ParseJSON(body), "upsert") where IsMatch(body, "^\\{") and not IsMatch(body, "\\x00")'
                     - 'set(attributes["trace_id"], cache["trace_id"]) where cache["trace_id"] != nil'
                     - 'set(attributes["span_id"], cache["span_id"]) where cache["span_id"] != nil'
                     - 'set(resource.attributes["trace_id"], cache["traceId"]) where cache["traceId"] != nil'
