@@ -259,6 +259,7 @@ spec:
             stage.match {
               selector = "{container=\"gravitee-reporter-tail\"}"
               stage.json {
+                source = "content"
                 expressions = {
                   traceparent = "endpointRequest.headers.traceparent[0] || entrypointRequest.headers.traceparent[0]",
                   trace_id = "traceId || endpointRequest.headers.\"x-trace-id\"[0] || endpointRequest.headers.\"X-Trace-Id\"[0] || endpointRequest.headers.trace_id[0] || entrypointRequest.headers.\"x-trace-id\"[0] || entrypointRequest.headers.\"X-Trace-Id\"[0] || entrypointRequest.headers.trace_id[0]",
@@ -286,9 +287,11 @@ spec:
                 expression = "[0-9a-f]{2}-(?P<trace_id_parent>[0-9a-f]{32})-(?P<span_id_parent>[0-9a-f]{16})-[0-9a-f]{2}"
               }
               stage.regex {
+                source = "content"
                 expression = "\"x-trace-id\"\\s*:\\s*\\[\"(?P<trace_id>[0-9a-f]{32})\"\\]"
               }
               stage.regex {
+                source = "content"
                 expression = "\"x-span-id\"\\s*:\\s*\\[\"(?P<span_id>[0-9a-f]{16})\"\\]"
               }
               stage.labels {
@@ -345,6 +348,7 @@ spec:
             stage.match {
               selector = "{container=\"apisix\"}"
               stage.json {
+                source = "content"
                 expressions = {
                   traceparent = "traceparent",
                   trace_id = "trace_id",
@@ -373,9 +377,11 @@ spec:
                 }
               }
               stage.regex {
+                source = "content"
                 expression = "\"trace_id\"[[:space:]]*:[[:space:]]*\"(?P<trace_id>[0-9a-f]{32})\""
               }
               stage.regex {
+                source = "content"
                 expression = "\"span_id\"[[:space:]]*:[[:space:]]*\"(?P<span_id>[0-9a-f]{16})\""
               }
               stage.regex {
@@ -442,9 +448,11 @@ spec:
             stage.match {
               selector = "{container=\"gravitee-gateway\"}"
               stage.regex {
+                source = "content"
                 expression = "trace_id=(?P<trace_id>[0-9a-f]{32}|-)\\s+span_id=(?P<span_id>[0-9a-f]{16}|-).*trace_id_alt=(?P<trace_id_alt>[0-9a-f]{32}|-)\\s+span_id_alt=(?P<span_id_alt>[0-9a-f]{16}|-)"
               }
               stage.regex {
+                source = "content"
                 expression = "trace_id_alt=(?P<trace_id>[0-9a-f]{32})\\s+span_id_alt=(?P<span_id>[0-9a-f]{16})"
               }
               stage.labels {
@@ -459,6 +467,7 @@ spec:
             stage.match {
               selector = "{container=\"hasura\"}"
               stage.json {
+                source = "content"
                 expressions = {
                   traceparent = "detail.http_info.headers.traceparent || detail.http_info.headers.\"Traceparent\" || detail.request.headers.traceparent || detail.request.headers.\"Traceparent\" || detail.user_vars.\"x-hasura-traceparent\" || detail.user_vars.\"X-Hasura-Traceparent\"",
                   trace_id = "detail.http_info.headers.\"x-trace-id\" || detail.http_info.headers.\"X-Trace-Id\" || detail.request.headers.\"x-trace-id\" || detail.request.headers.\"X-Trace-Id\"",
@@ -471,12 +480,15 @@ spec:
                 }
               }
               stage.regex {
+                source = "content"
                 expression = "traceparent[[:space:]]*[:=][[:space:]]*\"(?P<traceparent>[0-9a-f]{2}-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2})\""
               }
               stage.regex {
+                source = "content"
                 expression = "\"trace_id\"[[:space:]]*:[[:space:]]*\"(?P<trace_id>[0-9a-f]{32})\""
               }
               stage.regex {
+                source = "content"
                 expression = "\"span_id\"[[:space:]]*:[[:space:]]*\"(?P<span_id>[0-9a-f]{16})\""
               }
               stage.regex {
@@ -499,6 +511,7 @@ spec:
             stage.match {
               selector = "{container!=\"gravitee-reporter-tail\",container!=\"apisix\",container!=\"hasura\"}"
               stage.json {
+                source = "content"
                 expressions = {
                   trace_id = "trace_id || traceId",
                   span_id = "span_id || spanId",
