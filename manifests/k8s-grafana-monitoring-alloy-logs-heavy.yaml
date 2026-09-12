@@ -749,12 +749,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
-            resources:
-              requests:
-                cpu: 500m
-                memory: 512Mi
-              limits:
-                memory: 1Gi
             mounts:
               extra:
               - name: journal
