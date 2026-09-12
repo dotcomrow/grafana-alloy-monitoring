@@ -724,6 +724,15 @@ spec:
           controller:
             podAnnotations:
               reloader.stakater.com/auto: "true"
+            affinity:
+              nodeAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  nodeSelectorTerms:
+                    - matchExpressions:
+                        - key: kubernetes.io/hostname
+                          operator: NotIn
+                          values:
+                            - work-node-l4-gpu
             resources: {}
             remoteConfig:
               enabled: false

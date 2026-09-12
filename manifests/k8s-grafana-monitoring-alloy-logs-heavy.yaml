@@ -1,0 +1,777 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana-k8s-monitoring-alloy-logs-heavy
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '2'
+    linkerd.io/inject: disabled
+spec:
+  project: logging-and-monitoring
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: k8s-monitoring
+    targetRevision: 2.0.23
+    helm:
+      releaseName: grafana-k8s-monitoring-alloy-logs-heavy
+      valuesObject:
+        cluster:
+          name: suncoast-systems-k8s-cluster
+        kubeStateMetrics:
+          enabled: false
+        destinations:
+        - name: openobserve-pod-logs
+          type: otlp
+          url: openobserve-router.openobserve.svc.cluster.local:5081
+          protocol: grpc
+          auth:
+            type: none
+          processors:
+            attributes:
+              actions:
+              - key: trace_id
+                action: upsert
+                fromAttribute: loki.attribute.labels.trace_id
+              - key: span_id
+                action: upsert
+                fromAttribute: loki.attribute.labels.span_id
+              - key: traceparent
+                action: upsert
+                fromAttribute: loki.attribute.labels.traceparent
+              - key: gravitee_request_id
+                action: upsert
+                fromAttribute: loki.attribute.labels.gravitee_request_id
+              - key: gravitee_transaction_id
+                action: upsert
+                fromAttribute: loki.attribute.labels.gravitee_transaction_id
+              - key: gravitee_client_identifier
+                action: upsert
+                fromAttribute: loki.attribute.labels.gravitee_client_identifier
+              - key: x_gravitee_request_id
+                action: upsert
+                fromAttribute: loki.attribute.labels.x_gravitee_request_id
+              - key: x_gravitee_transaction_id
+                action: upsert
+                fromAttribute: loki.attribute.labels.x_gravitee_transaction_id
+              - key: x_gravitee_client_identifier
+                action: upsert
+                fromAttribute: loki.attribute.labels.x_gravitee_client_identifier
+            transform:
+              logs:
+                log:
+                - merge_maps(cache, ParseJSON(body), "upsert") where attributes["container"]
+                  == "apisix" and IsMatch(body, "^\\{")
+                - merge_maps(cache, ParseJSON(body), "upsert") where attributes["container"]
+                  == "gravitee-reporter-tail" and IsMatch(body, "^\\{")
+                - set(attributes["trace_id"], cache["trace_id"]) where attributes["container"]
+                  == "apisix" and cache["trace_id"] != nil and cache["trace_id"] !=
+                  ""
+                - set(attributes["span_id"], cache["span_id"]) where attributes["container"]
+                  == "apisix" and cache["span_id"] != nil and cache["span_id"] !=
+                  ""
+                - set(attributes["traceparent"], cache["traceparent"]) where attributes["container"]
+                  == "apisix" and cache["traceparent"] != nil and cache["traceparent"]
+                  != ""
+                - set(attributes["remote_addr"], cache["remote_addr"]) where attributes["container"]
+                  == "apisix" and cache["remote_addr"] != nil and cache["remote_addr"]
+                  != ""
+                - set(attributes["x_forwarded_for"], cache["x_forwarded_for"]) where
+                  attributes["container"] == "apisix" and cache["x_forwarded_for"]
+                  != nil and cache["x_forwarded_for"] != ""
+                - set(attributes["x_forwarded_host"], cache["x_forwarded_host"]) where
+                  attributes["container"] == "apisix" and cache["x_forwarded_host"]
+                  != nil and cache["x_forwarded_host"] != ""
+                - set(attributes["x_forwarded_proto"], cache["x_forwarded_proto"])
+                  where attributes["container"] == "apisix" and cache["x_forwarded_proto"]
+                  != nil and cache["x_forwarded_proto"] != ""
+                - set(attributes["x_real_ip"], cache["x_real_ip"]) where attributes["container"]
+                  == "apisix" and cache["x_real_ip"] != nil and cache["x_real_ip"]
+                  != ""
+                - set(attributes["x_client_ip"], cache["x_client_ip"]) where attributes["container"]
+                  == "apisix" and cache["x_client_ip"] != nil and cache["x_client_ip"]
+                  != ""
+                - set(attributes["cf_connecting_ip"], cache["cf_connecting_ip"]) where
+                  attributes["container"] == "apisix" and cache["cf_connecting_ip"]
+                  != nil and cache["cf_connecting_ip"] != ""
+                - set(attributes["true_client_ip"], cache["true_client_ip"]) where
+                  attributes["container"] == "apisix" and cache["true_client_ip"]
+                  != nil and cache["true_client_ip"] != ""
+                - set(attributes["user_agent"], cache["user_agent"]) where attributes["container"]
+                  == "apisix" and cache["user_agent"] != nil and cache["user_agent"]
+                  != ""
+                - set(attributes["method"], cache["method"]) where attributes["container"]
+                  == "apisix" and cache["method"] != nil and cache["method"] != ""
+                - set(attributes["status"], cache["status"]) where attributes["container"]
+                  == "apisix" and cache["status"] != nil and cache["status"] != ""
+                - set(attributes["host"], cache["host"]) where attributes["container"]
+                  == "apisix" and cache["host"] != nil and cache["host"] != ""
+                - set(attributes["x_gravitee_request_id"], cache["x_gravitee_request_id"])
+                  where attributes["container"] == "apisix" and cache["x_gravitee_request_id"]
+                  != nil and cache["x_gravitee_request_id"] != ""
+                - set(attributes["x_gravitee_transaction_id"], cache["x_gravitee_transaction_id"])
+                  where attributes["container"] == "apisix" and cache["x_gravitee_transaction_id"]
+                  != nil and cache["x_gravitee_transaction_id"] != ""
+                - set(attributes["x_gravitee_client_identifier"], cache["x_gravitee_client_identifier"])
+                  where attributes["container"] == "apisix" and cache["x_gravitee_client_identifier"]
+                  != nil and cache["x_gravitee_client_identifier"] != ""
+                - set(attributes["gravitee_request_id"], cache["requestId"]) where
+                  attributes["container"] == "gravitee-reporter-tail" and cache["requestId"]
+                  != nil and cache["requestId"] != ""
+                - set(attributes["gravitee_transaction_id"], cache["requestId"]) where
+                  attributes["container"] == "gravitee-reporter-tail" and cache["requestId"]
+                  != nil and cache["requestId"] != ""
+                - set(attributes["x_gravitee_request_id"], cache["requestId"]) where
+                  attributes["container"] == "gravitee-reporter-tail" and cache["requestId"]
+                  != nil and cache["requestId"] != ""
+                - set(attributes["x_gravitee_transaction_id"], cache["requestId"])
+                  where attributes["container"] == "gravitee-reporter-tail" and cache["requestId"]
+                  != nil and cache["requestId"] != ""
+                - set(attributes["gravitee_client_identifier"], cache["entrypointResponse"]["headers"]["X-Gravitee-Client-Identifier"][0])
+                  where attributes["container"] == "gravitee-reporter-tail" and cache["entrypointResponse"]["headers"]["X-Gravitee-Client-Identifier"][0]
+                  != nil and cache["entrypointResponse"]["headers"]["X-Gravitee-Client-Identifier"][0]
+                  != ""
+                - set(attributes["x_gravitee_client_identifier"], attributes["gravitee_client_identifier"])
+                  where attributes["container"] == "gravitee-reporter-tail" and attributes["x_gravitee_client_identifier"]
+                  == nil and attributes["gravitee_client_identifier"] != nil
+                - set(attributes["x_forwarded_for"], cache["entrypointRequest"]["headers"]["x-forwarded-for"][0])
+                  where attributes["container"] == "gravitee-reporter-tail" and cache["entrypointRequest"]["headers"]["x-forwarded-for"][0]
+                  != nil and cache["entrypointRequest"]["headers"]["x-forwarded-for"][0]
+                  != ""
+                - set(attributes["x_forwarded_host"], cache["entrypointRequest"]["headers"]["x-forwarded-host"][0])
+                  where attributes["container"] == "gravitee-reporter-tail" and cache["entrypointRequest"]["headers"]["x-forwarded-host"][0]
+                  != nil and cache["entrypointRequest"]["headers"]["x-forwarded-host"][0]
+                  != ""
+                - set(attributes["x_forwarded_proto"], cache["entrypointRequest"]["headers"]["x-forwarded-proto"][0])
+                  where attributes["container"] == "gravitee-reporter-tail" and cache["entrypointRequest"]["headers"]["x-forwarded-proto"][0]
+                  != nil and cache["entrypointRequest"]["headers"]["x-forwarded-proto"][0]
+                  != ""
+                - set(attributes["x_real_ip"], cache["entrypointRequest"]["headers"]["x-real-ip"][0])
+                  where attributes["container"] == "gravitee-reporter-tail" and cache["entrypointRequest"]["headers"]["x-real-ip"][0]
+                  != nil and cache["entrypointRequest"]["headers"]["x-real-ip"][0]
+                  != ""
+                - set(attributes["x_client_ip"], cache["entrypointRequest"]["headers"]["x-client-ip"][0])
+                  where attributes["container"] == "gravitee-reporter-tail" and cache["entrypointRequest"]["headers"]["x-client-ip"][0]
+                  != nil and cache["entrypointRequest"]["headers"]["x-client-ip"][0]
+                  != ""
+                - set(attributes["cf_connecting_ip"], cache["entrypointRequest"]["headers"]["cf-connecting-ip"][0])
+                  where attributes["container"] == "gravitee-reporter-tail" and cache["entrypointRequest"]["headers"]["cf-connecting-ip"][0]
+                  != nil and cache["entrypointRequest"]["headers"]["cf-connecting-ip"][0]
+                  != ""
+                - set(attributes["true_client_ip"], cache["entrypointRequest"]["headers"]["true-client-ip"][0])
+                  where attributes["container"] == "gravitee-reporter-tail" and cache["entrypointRequest"]["headers"]["true-client-ip"][0]
+                  != nil and cache["entrypointRequest"]["headers"]["true-client-ip"][0]
+                  != ""
+                - set(attributes["user_agent"], cache["entrypointRequest"]["headers"]["user-agent"][0])
+                  where attributes["container"] == "gravitee-reporter-tail" and cache["entrypointRequest"]["headers"]["user-agent"][0]
+                  != nil and cache["entrypointRequest"]["headers"]["user-agent"][0]
+                  != ""
+                - set(attributes["trace_id"], cache["endpointRequest"]["headers"]["x-trace-id"][0])
+                  where attributes["container"] == "gravitee-reporter-tail" and cache["endpointRequest"]["headers"]["x-trace-id"][0]
+                  != nil and cache["endpointRequest"]["headers"]["x-trace-id"][0]
+                  != ""
+                - set(attributes["span_id"], cache["endpointRequest"]["headers"]["x-span-id"][0])
+                  where attributes["container"] == "gravitee-reporter-tail" and cache["endpointRequest"]["headers"]["x-span-id"][0]
+                  != nil and cache["endpointRequest"]["headers"]["x-span-id"][0] !=
+                  ""
+                - set(attributes["client_ip"], attributes["cf_connecting_ip"]) where
+                  attributes["client_ip"] == nil and attributes["cf_connecting_ip"]
+                  != nil and attributes["cf_connecting_ip"] != ""
+                - set(attributes["client_ip"], attributes["true_client_ip"]) where
+                  attributes["client_ip"] == nil and attributes["true_client_ip"]
+                  != nil and attributes["true_client_ip"] != ""
+                - set(attributes["client_ip"], attributes["x_real_ip"]) where attributes["client_ip"]
+                  == nil and attributes["x_real_ip"] != nil and attributes["x_real_ip"]
+                  != ""
+                - set(attributes["client_ip"], attributes["x_client_ip"]) where attributes["client_ip"]
+                  == nil and attributes["x_client_ip"] != nil and attributes["x_client_ip"]
+                  != ""
+                - set(attributes["client_ip"], attributes["x_forwarded_for"]) where
+                  attributes["client_ip"] == nil and attributes["x_forwarded_for"]
+                  != nil and attributes["x_forwarded_for"] != ""
+                - set(attributes["client_ip"], attributes["remote_addr"]) where attributes["client_ip"]
+                  == nil and attributes["remote_addr"] != nil and attributes["remote_addr"]
+                  != ""
+                - set(attributes["trace_id"], attributes["loki.attribute.labels.trace_id"])
+                  where attributes["trace_id"] == nil and attributes["loki.attribute.labels.trace_id"]
+                  != nil
+                - set(attributes["span_id"], attributes["loki.attribute.labels.span_id"])
+                  where attributes["span_id"] == nil and attributes["loki.attribute.labels.span_id"]
+                  != nil
+                - set(attributes["traceparent"], attributes["loki.attribute.labels.traceparent"])
+                  where attributes["traceparent"] == nil and attributes["loki.attribute.labels.traceparent"]
+                  != nil
+                - set(attributes["gravitee_request_id"], attributes["loki.attribute.labels.gravitee_request_id"])
+                  where attributes["gravitee_request_id"] == nil and attributes["loki.attribute.labels.gravitee_request_id"]
+                  != nil
+                - set(attributes["gravitee_transaction_id"], attributes["loki.attribute.labels.gravitee_transaction_id"])
+                  where attributes["gravitee_transaction_id"] == nil and attributes["loki.attribute.labels.gravitee_transaction_id"]
+                  != nil
+                - set(attributes["gravitee_client_identifier"], attributes["loki.attribute.labels.gravitee_client_identifier"])
+                  where attributes["gravitee_client_identifier"] == nil and attributes["loki.attribute.labels.gravitee_client_identifier"]
+                  != nil
+                - set(attributes["x_gravitee_request_id"], attributes["gravitee_request_id"])
+                  where attributes["x_gravitee_request_id"] == nil and attributes["gravitee_request_id"]
+                  != nil
+                - set(attributes["x_gravitee_transaction_id"], attributes["gravitee_transaction_id"])
+                  where attributes["x_gravitee_transaction_id"] == nil and attributes["gravitee_transaction_id"]
+                  != nil
+                - set(attributes["x_gravitee_client_identifier"], attributes["gravitee_client_identifier"])
+                  where attributes["x_gravitee_client_identifier"] == nil and attributes["gravitee_client_identifier"]
+                  != nil
+                - set(trace_id, attributes["trace_id"]) where trace_id == nil and
+                  attributes["trace_id"] != nil
+                - set(span_id, attributes["span_id"]) where span_id == nil and attributes["span_id"]
+                  != nil
+                - set(trace_id, attributes["loki.attribute.labels.trace_id"]) where
+                  trace_id == nil and attributes["loki.attribute.labels.trace_id"]
+                  != nil
+                - set(span_id, attributes["loki.attribute.labels.span_id"]) where
+                  span_id == nil and attributes["loki.attribute.labels.span_id"] !=
+                  nil
+                - set(resource.attributes["trace_id"], attributes["trace_id"]) where
+                  attributes["trace_id"] != nil
+                - set(resource.attributes["span_id"], attributes["span_id"]) where
+                  attributes["span_id"] != nil
+                - set(resource.attributes["trace_id"], attributes["loki.attribute.labels.trace_id"])
+                  where attributes["loki.attribute.labels.trace_id"] != nil
+                - set(resource.attributes["span_id"], attributes["loki.attribute.labels.span_id"])
+                  where attributes["loki.attribute.labels.span_id"] != nil
+          extraHeaders:
+            organization: default
+            stream-name: k8s_pod_logs
+          extraHeadersFrom:
+            Authorization: env("OO_AUTH_HEADER")
+          tls:
+            insecure: true
+          logs:
+            enabled: true
+        - name: openobserve-otlp
+          type: otlp
+          url: openobserve-router.openobserve.svc.cluster.local:5081
+          protocol: grpc
+          auth:
+            type: none
+          processors:
+            attributes:
+              actions:
+              - key: trace_id
+                action: upsert
+                fromAttribute: loki.attribute.labels.trace_id
+              - key: span_id
+                action: upsert
+                fromAttribute: loki.attribute.labels.span_id
+              - key: traceparent
+                action: upsert
+                fromAttribute: loki.attribute.labels.traceparent
+              - key: gravitee_request_id
+                action: upsert
+                fromAttribute: loki.attribute.labels.gravitee_request_id
+              - key: gravitee_transaction_id
+                action: upsert
+                fromAttribute: loki.attribute.labels.gravitee_transaction_id
+              - key: gravitee_client_identifier
+                action: upsert
+                fromAttribute: loki.attribute.labels.gravitee_client_identifier
+              - key: x_gravitee_request_id
+                action: upsert
+                fromAttribute: loki.attribute.labels.x_gravitee_request_id
+              - key: x_gravitee_transaction_id
+                action: upsert
+                fromAttribute: loki.attribute.labels.x_gravitee_transaction_id
+              - key: x_gravitee_client_identifier
+                action: upsert
+                fromAttribute: loki.attribute.labels.x_gravitee_client_identifier
+            transform:
+              logs:
+                log:
+                - set(attributes["trace_id"], attributes["loki.attribute.labels.trace_id"])
+                  where attributes["trace_id"] == nil and attributes["loki.attribute.labels.trace_id"]
+                  != nil
+                - set(attributes["span_id"], attributes["loki.attribute.labels.span_id"])
+                  where attributes["span_id"] == nil and attributes["loki.attribute.labels.span_id"]
+                  != nil
+                - set(attributes["traceparent"], attributes["loki.attribute.labels.traceparent"])
+                  where attributes["traceparent"] == nil and attributes["loki.attribute.labels.traceparent"]
+                  != nil
+                - set(attributes["gravitee_request_id"], attributes["loki.attribute.labels.gravitee_request_id"])
+                  where attributes["gravitee_request_id"] == nil and attributes["loki.attribute.labels.gravitee_request_id"]
+                  != nil
+                - set(attributes["gravitee_transaction_id"], attributes["loki.attribute.labels.gravitee_transaction_id"])
+                  where attributes["gravitee_transaction_id"] == nil and attributes["loki.attribute.labels.gravitee_transaction_id"]
+                  != nil
+                - set(attributes["gravitee_client_identifier"], attributes["loki.attribute.labels.gravitee_client_identifier"])
+                  where attributes["gravitee_client_identifier"] == nil and attributes["loki.attribute.labels.gravitee_client_identifier"]
+                  != nil
+                - set(attributes["x_gravitee_request_id"], attributes["gravitee_request_id"])
+                  where attributes["x_gravitee_request_id"] == nil and attributes["gravitee_request_id"]
+                  != nil
+                - set(attributes["x_gravitee_transaction_id"], attributes["gravitee_transaction_id"])
+                  where attributes["x_gravitee_transaction_id"] == nil and attributes["gravitee_transaction_id"]
+                  != nil
+                - set(attributes["x_gravitee_client_identifier"], attributes["gravitee_client_identifier"])
+                  where attributes["x_gravitee_client_identifier"] == nil and attributes["gravitee_client_identifier"]
+                  != nil
+                - set(trace_id, attributes["trace_id"]) where trace_id == nil and
+                  attributes["trace_id"] != nil
+                - set(span_id, attributes["span_id"]) where span_id == nil and attributes["span_id"]
+                  != nil
+                - set(trace_id, attributes["loki.attribute.labels.trace_id"]) where
+                  trace_id == nil and attributes["loki.attribute.labels.trace_id"]
+                  != nil
+                - set(span_id, attributes["loki.attribute.labels.span_id"]) where
+                  span_id == nil and attributes["loki.attribute.labels.span_id"] !=
+                  nil
+                - set(resource.attributes["trace_id"], attributes["trace_id"]) where
+                  attributes["trace_id"] != nil
+                - set(resource.attributes["span_id"], attributes["span_id"]) where
+                  attributes["span_id"] != nil
+                - set(resource.attributes["trace_id"], attributes["loki.attribute.labels.trace_id"])
+                  where attributes["loki.attribute.labels.trace_id"] != nil
+                - set(resource.attributes["span_id"], attributes["loki.attribute.labels.span_id"])
+                  where attributes["loki.attribute.labels.span_id"] != nil
+          extraHeaders:
+            organization: default
+            stream-name: default
+          extraHeadersFrom:
+            Authorization: env("OO_AUTH_HEADER")
+          tls:
+            insecure: true
+          traces:
+            enabled: true
+          logs:
+            enabled: false
+          metrics:
+            enabled: true
+        podLogs:
+          enabled: true
+          destinations:
+          - openobserve-pod-logs
+          extraLogProcessingStages: |
+            stage.match {
+              selector = "{container=\"gravitee-reporter-tail\"}"
+              stage.json {
+                source = "content"
+                expressions = {
+                  traceparent = "endpointRequest.headers.traceparent[0] || entrypointRequest.headers.traceparent[0]",
+                  trace_id = "traceId || endpointRequest.headers.\"x-trace-id\"[0] || endpointRequest.headers.\"X-Trace-Id\"[0] || endpointRequest.headers.trace_id[0] || entrypointRequest.headers.\"x-trace-id\"[0] || entrypointRequest.headers.\"X-Trace-Id\"[0] || entrypointRequest.headers.trace_id[0]",
+                  span_id = "spanId || endpointRequest.headers.\"x-span-id\"[0] || endpointRequest.headers.\"X-Span-Id\"[0] || endpointRequest.headers.span_id[0] || entrypointRequest.headers.\"x-span-id\"[0] || entrypointRequest.headers.\"X-Span-Id\"[0] || entrypointRequest.headers.span_id[0]",
+                  x_forwarded_for = "entrypointRequest.headers.\"x-forwarded-for\"[0]",
+                  x_forwarded_host = "entrypointRequest.headers.\"x-forwarded-host\"[0]",
+                  x_forwarded_proto = "entrypointRequest.headers.\"x-forwarded-proto\"[0]",
+                  x_real_ip = "entrypointRequest.headers.\"x-real-ip\"[0]",
+                  x_client_ip = "entrypointRequest.headers.\"x-client-ip\"[0]",
+                  user_agent = "entrypointRequest.headers.\"user-agent\"[0]",
+                  x_user_email = "entrypointRequest.headers.\"x-user-email\"[0]",
+                  x_user_id = "entrypointRequest.headers.\"x-user-id\"[0]",
+                  x_user_issuer = "entrypointRequest.headers.\"x-user-issuer\"[0]",
+                  x_user_username = "entrypointRequest.headers.\"x-user-username\"[0]",
+                  gravitee_request_id = "requestId || entrypointRequest.headers.\"x-gravitee-request-id\"[0] || entrypointRequest.headers.\"X-Gravitee-Request-Id\"[0] || endpointRequest.headers.\"x-gravitee-request-id\"[0] || endpointRequest.headers.\"X-Gravitee-Request-Id\"[0] || entrypointResponse.headers.\"x-gravitee-request-id\"[0] || entrypointResponse.headers.\"X-Gravitee-Request-Id\"[0] || endpointResponse.headers.\"x-gravitee-request-id\"[0] || endpointResponse.headers.\"X-Gravitee-Request-Id\"[0]",
+                  gravitee_transaction_id = "requestId || entrypointRequest.headers.\"x-gravitee-transaction-id\"[0] || entrypointRequest.headers.\"X-Gravitee-Transaction-Id\"[0] || endpointRequest.headers.\"x-gravitee-transaction-id\"[0] || endpointRequest.headers.\"X-Gravitee-Transaction-Id\"[0] || entrypointResponse.headers.\"x-gravitee-transaction-id\"[0] || entrypointResponse.headers.\"X-Gravitee-Transaction-Id\"[0] || endpointResponse.headers.\"x-gravitee-transaction-id\"[0] || endpointResponse.headers.\"X-Gravitee-Transaction-Id\"[0]",
+                  gravitee_client_identifier = "entrypointRequest.headers.\"x-gravitee-client-identifier\"[0] || entrypointRequest.headers.\"X-Gravitee-Client-Identifier\"[0] || endpointRequest.headers.\"x-gravitee-client-identifier\"[0] || endpointRequest.headers.\"X-Gravitee-Client-Identifier\"[0] || entrypointResponse.headers.\"x-gravitee-client-identifier\"[0] || entrypointResponse.headers.\"X-Gravitee-Client-Identifier\"[0] || endpointResponse.headers.\"x-gravitee-client-identifier\"[0] || endpointResponse.headers.\"X-Gravitee-Client-Identifier\"[0]",
+                  x_gravitee_request_id = "requestId || entrypointRequest.headers.\"x-gravitee-request-id\"[0] || entrypointRequest.headers.\"X-Gravitee-Request-Id\"[0] || endpointRequest.headers.\"x-gravitee-request-id\"[0] || endpointRequest.headers.\"X-Gravitee-Request-Id\"[0] || entrypointResponse.headers.\"x-gravitee-request-id\"[0] || entrypointResponse.headers.\"X-Gravitee-Request-Id\"[0] || endpointResponse.headers.\"x-gravitee-request-id\"[0] || endpointResponse.headers.\"X-Gravitee-Request-Id\"[0]",
+                  x_gravitee_transaction_id = "requestId || entrypointRequest.headers.\"x-gravitee-transaction-id\"[0] || entrypointRequest.headers.\"X-Gravitee-Transaction-Id\"[0] || endpointRequest.headers.\"x-gravitee-transaction-id\"[0] || endpointRequest.headers.\"X-Gravitee-Transaction-Id\"[0] || entrypointResponse.headers.\"x-gravitee-transaction-id\"[0] || entrypointResponse.headers.\"X-Gravitee-Transaction-Id\"[0] || endpointResponse.headers.\"x-gravitee-transaction-id\"[0] || endpointResponse.headers.\"X-Gravitee-Transaction-Id\"[0]",
+                  x_gravitee_client_identifier = "entrypointRequest.headers.\"x-gravitee-client-identifier\"[0] || entrypointRequest.headers.\"X-Gravitee-Client-Identifier\"[0] || endpointRequest.headers.\"x-gravitee-client-identifier\"[0] || endpointRequest.headers.\"X-Gravitee-Client-Identifier\"[0] || entrypointResponse.headers.\"x-gravitee-client-identifier\"[0] || entrypointResponse.headers.\"X-Gravitee-Client-Identifier\"[0] || endpointResponse.headers.\"x-gravitee-client-identifier\"[0] || endpointResponse.headers.\"X-Gravitee-Client-Identifier\"[0]",
+                }
+              }
+              stage.regex {
+                source = "traceparent"
+                expression = "[0-9a-f]{2}-(?P<trace_id_parent>[0-9a-f]{32})-(?P<span_id_parent>[0-9a-f]{16})-[0-9a-f]{2}"
+              }
+              stage.regex {
+                source = "content"
+                expression = "\"x-trace-id\"\\s*:\\s*\\[\"(?P<trace_id>[0-9a-f]{32})\"\\]"
+              }
+              stage.regex {
+                source = "content"
+                expression = "\"x-span-id\"\\s*:\\s*\\[\"(?P<span_id>[0-9a-f]{16})\"\\]"
+              }
+              stage.labels {
+                values = {
+                  traceparent = "",
+                  trace_id = "",
+                  span_id = "",
+                  trace_id_parent = "",
+                  span_id_parent = "",
+                  x_forwarded_for = "",
+                  x_forwarded_host = "",
+                  x_forwarded_proto = "",
+                  x_real_ip = "",
+                  x_client_ip = "",
+                  user_agent = "",
+                  x_user_email = "",
+                  x_user_id = "",
+                  x_user_issuer = "",
+                  x_user_username = "",
+                  gravitee_request_id = "",
+                  gravitee_transaction_id = "",
+                  gravitee_client_identifier = "",
+                  x_gravitee_request_id = "",
+                  x_gravitee_transaction_id = "",
+                  x_gravitee_client_identifier = "",
+                }
+              }
+              stage.structured_metadata {
+                values = {
+                  traceparent = "",
+                  trace_id = "",
+                  span_id = "",
+                  trace_id_parent = "",
+                  span_id_parent = "",
+                  x_forwarded_for = "",
+                  x_forwarded_host = "",
+                  x_forwarded_proto = "",
+                  x_real_ip = "",
+                  x_client_ip = "",
+                  user_agent = "",
+                  x_user_email = "",
+                  x_user_id = "",
+                  x_user_issuer = "",
+                  x_user_username = "",
+                  gravitee_request_id = "",
+                  gravitee_transaction_id = "",
+                  gravitee_client_identifier = "",
+                  x_gravitee_request_id = "",
+                  x_gravitee_transaction_id = "",
+                  x_gravitee_client_identifier = "",
+                }
+              }
+            }
+            stage.match {
+              selector = "{container=\"apisix\"}"
+              stage.json {
+                source = "content"
+                expressions = {
+                  traceparent = "traceparent",
+                  trace_id = "trace_id",
+                  span_id = "span_id",
+                  remote_addr = "remote_addr",
+                  x_forwarded_for = "x_forwarded_for",
+                  x_forwarded_host = "x_forwarded_host",
+                  x_forwarded_proto = "x_forwarded_proto",
+                  x_real_ip = "x_real_ip",
+                  x_client_ip = "x_client_ip",
+                  user_agent = "user_agent",
+                  gravitee_request_id = "gravitee_request_id || x_gravitee_request_id",
+                  gravitee_transaction_id = "gravitee_transaction_id || x_gravitee_transaction_id",
+                  gravitee_client_identifier = "gravitee_client_identifier || x_gravitee_client_identifier",
+                  x_gravitee_request_id = "x_gravitee_request_id || gravitee_request_id",
+                  x_gravitee_transaction_id = "x_gravitee_transaction_id || gravitee_transaction_id",
+                  x_gravitee_client_identifier = "x_gravitee_client_identifier || gravitee_client_identifier",
+                  host = "host",
+                  scheme = "scheme",
+                  method = "method",
+                  uri = "uri",
+                  status = "status",
+                  request_time = "request_time",
+                  upstream_status = "upstream_status",
+                  upstream_response_time = "upstream_response_time",
+                }
+              }
+              stage.regex {
+                source = "content"
+                expression = "\"trace_id\"[[:space:]]*:[[:space:]]*\"(?P<trace_id>[0-9a-f]{32})\""
+              }
+              stage.regex {
+                source = "content"
+                expression = "\"span_id\"[[:space:]]*:[[:space:]]*\"(?P<span_id>[0-9a-f]{16})\""
+              }
+              stage.regex {
+                source = "traceparent"
+                expression = "[0-9a-f]{2}-(?P<trace_id>[0-9a-f]{32})-(?P<span_id>[0-9a-f]{16})-[0-9a-f]{2}"
+              }
+              stage.labels {
+                values = {
+                  traceparent = "",
+                  trace_id = "",
+                  span_id = "",
+                  remote_addr = "",
+                  x_forwarded_for = "",
+                  x_forwarded_host = "",
+                  x_forwarded_proto = "",
+                  x_real_ip = "",
+                  x_client_ip = "",
+                  user_agent = "",
+                  gravitee_request_id = "",
+                  gravitee_transaction_id = "",
+                  gravitee_client_identifier = "",
+                  x_gravitee_request_id = "",
+                  x_gravitee_transaction_id = "",
+                  x_gravitee_client_identifier = "",
+                  host = "",
+                  scheme = "",
+                  method = "",
+                  uri = "",
+                  status = "",
+                  request_time = "",
+                  upstream_status = "",
+                  upstream_response_time = "",
+                }
+              }
+              stage.structured_metadata {
+                values = {
+                  traceparent = "",
+                  trace_id = "",
+                  span_id = "",
+                  remote_addr = "",
+                  x_forwarded_for = "",
+                  x_forwarded_host = "",
+                  x_forwarded_proto = "",
+                  x_real_ip = "",
+                  x_client_ip = "",
+                  user_agent = "",
+                  gravitee_request_id = "",
+                  gravitee_transaction_id = "",
+                  gravitee_client_identifier = "",
+                  x_gravitee_request_id = "",
+                  x_gravitee_transaction_id = "",
+                  x_gravitee_client_identifier = "",
+                  host = "",
+                  scheme = "",
+                  method = "",
+                  uri = "",
+                  status = "",
+                  request_time = "",
+                  upstream_status = "",
+                  upstream_response_time = "",
+                }
+              }
+            }
+            stage.match {
+              selector = "{container=\"gravitee-gateway\"}"
+              stage.regex {
+                source = "content"
+                expression = "trace_id=(?P<trace_id>[0-9a-f]{32}|-)\\s+span_id=(?P<span_id>[0-9a-f]{16}|-).*trace_id_alt=(?P<trace_id_alt>[0-9a-f]{32}|-)\\s+span_id_alt=(?P<span_id_alt>[0-9a-f]{16}|-)"
+              }
+              stage.regex {
+                source = "content"
+                expression = "trace_id_alt=(?P<trace_id>[0-9a-f]{32})\\s+span_id_alt=(?P<span_id>[0-9a-f]{16})"
+              }
+              stage.labels {
+                values = {
+                  trace_id = "",
+                  span_id = "",
+                  trace_id_alt = "",
+                  span_id_alt = "",
+                }
+              }
+            }
+            stage.match {
+              selector = "{container=\"hasura\"}"
+              stage.json {
+                source = "content"
+                expressions = {
+                  traceparent = "detail.http_info.headers.traceparent || detail.http_info.headers.\"Traceparent\" || detail.request.headers.traceparent || detail.request.headers.\"Traceparent\" || detail.user_vars.\"x-hasura-traceparent\" || detail.user_vars.\"X-Hasura-Traceparent\"",
+                  trace_id = "detail.http_info.headers.\"x-trace-id\" || detail.http_info.headers.\"X-Trace-Id\" || detail.request.headers.\"x-trace-id\" || detail.request.headers.\"X-Trace-Id\"",
+                  span_id = "detail.http_info.headers.\"x-span-id\" || detail.http_info.headers.\"X-Span-Id\" || detail.request.headers.\"x-span-id\" || detail.request.headers.\"X-Span-Id\"",
+                  remote_addr = "detail.http_info.ip",
+                  method = "detail.http_info.method",
+                  uri = "detail.http_info.url",
+                  status = "detail.http_info.status",
+                  request_id = "detail.request_id",
+                }
+              }
+              stage.regex {
+                source = "content"
+                expression = "traceparent[[:space:]]*[:=][[:space:]]*\"(?P<traceparent>[0-9a-f]{2}-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2})\""
+              }
+              stage.regex {
+                source = "content"
+                expression = "\"trace_id\"[[:space:]]*:[[:space:]]*\"(?P<trace_id>[0-9a-f]{32})\""
+              }
+              stage.regex {
+                source = "content"
+                expression = "\"span_id\"[[:space:]]*:[[:space:]]*\"(?P<span_id>[0-9a-f]{16})\""
+              }
+              stage.regex {
+                source = "traceparent"
+                expression = "[0-9a-f]{2}-(?P<trace_id>[0-9a-f]{32})-(?P<span_id>[0-9a-f]{16})-[0-9a-f]{2}"
+              }
+              stage.labels {
+                values = {
+                  traceparent = "",
+                  trace_id = "",
+                  span_id = "",
+                  remote_addr = "",
+                  method = "",
+                  uri = "",
+                  status = "",
+                  request_id = "",
+                }
+              }
+            }
+            stage.match {
+              selector = "{container!=\"gravitee-reporter-tail\",container!=\"apisix\",container!=\"hasura\"}"
+              stage.json {
+                source = "content"
+                expressions = {
+                  trace_id = "trace_id || traceId",
+                  span_id = "span_id || spanId",
+                  traceparent = "traceparent",
+                  remote_addr = "remote_addr",
+                  x_forwarded_for = "x_forwarded_for",
+                  x_forwarded_host = "x_forwarded_host",
+                  x_forwarded_proto = "x_forwarded_proto",
+                  x_real_ip = "x_real_ip",
+                  x_client_ip = "x_client_ip",
+                  user_agent = "user_agent",
+                  x_user_email = "x_user_email",
+                  x_user_id = "x_user_id",
+                  x_user_issuer = "x_user_issuer",
+                  x_user_username = "x_user_username",
+                  gravitee_request_id = "requestId",
+                  gravitee_transaction_id = "requestId",
+                  gravitee_client_identifier = "gravitee_client_identifier || x_gravitee_client_identifier",
+                  x_gravitee_request_id = "x_gravitee_request_id || gravitee_request_id || requestId",
+                  x_gravitee_transaction_id = "x_gravitee_transaction_id || gravitee_transaction_id || requestId",
+                  x_gravitee_client_identifier = "x_gravitee_client_identifier || gravitee_client_identifier",
+                  host = "host",
+                  scheme = "scheme",
+                  method = "method",
+                  uri = "uri",
+                  status = "status",
+                  request_time = "request_time",
+                  upstream_status = "upstream_status",
+                  upstream_response_time = "upstream_response_time",
+                }
+              }
+              stage.labels {
+                values = {
+                  trace_id = "",
+                  span_id = "",
+                  traceparent = "",
+                  remote_addr = "",
+                  x_forwarded_for = "",
+                  x_forwarded_host = "",
+                  x_forwarded_proto = "",
+                  x_real_ip = "",
+                  x_client_ip = "",
+                  user_agent = "",
+                  x_user_email = "",
+                  x_user_id = "",
+                  x_user_issuer = "",
+                  x_user_username = "",
+                  gravitee_request_id = "",
+                  gravitee_transaction_id = "",
+                  gravitee_client_identifier = "",
+                  x_gravitee_request_id = "",
+                  x_gravitee_transaction_id = "",
+                  x_gravitee_client_identifier = "",
+                  host = "",
+                  scheme = "",
+                  method = "",
+                  uri = "",
+                  status = "",
+                  request_time = "",
+                  upstream_status = "",
+                  upstream_response_time = "",
+                }
+              }
+            }
+          labelsToKeep:
+          - app.kubernetes.io/name
+          - container
+          - instance
+          - job
+          - level
+          - namespace
+          - service.name
+          - service.namespace
+          - deployment.environment
+          - deployment.environment.name
+          - k8s.namespace.name
+          - k8s.deployment.name
+          - k8s.statefulset.name
+          - k8s.daemonset.name
+          - k8s.cronjob.name
+          - k8s.job.name
+          - k8s.node.name
+          - trace_id
+          - span_id
+          - traceparent
+          - remote_addr
+          - x_forwarded_for
+          - x_forwarded_host
+          - x_forwarded_proto
+          - x_real_ip
+          - x_client_ip
+          - user_agent
+          - x_user_email
+          - x_user_id
+          - x_user_issuer
+          - x_user_username
+          - gravitee_request_id
+          - gravitee_transaction_id
+          - gravitee_client_identifier
+          - x_gravitee_request_id
+          - x_gravitee_transaction_id
+          - x_gravitee_client_identifier
+          - host
+          - scheme
+          - method
+          - uri
+          - status
+          - request_time
+          - upstream_status
+          - upstream_response_time
+        alloy-logs:
+          enabled: true
+          controller:
+            podAnnotations:
+              reloader.stakater.com/auto: 'true'
+            resources: {}
+            remoteConfig:
+              enabled: false
+            volumes:
+              extra:
+              - name: journal
+                hostPath:
+                  path: "/var/log/journal"
+            nodeSelector:
+              kubernetes.io/hostname: work-node-l4-gpu
+          alloy:
+            extraEnv:
+            - name: OO_AUTH_HEADER
+              valueFrom:
+                secretKeyRef:
+                  name: oo-auth
+                  key: OO_AUTH_HEADER
+            - name: CLUSTER_NAME
+              value: suncoast-systems-k8s-cluster
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            resources:
+              requests:
+                cpu: 500m
+                memory: 512Mi
+              limits:
+                memory: 1Gi
+            mounts:
+              extra:
+              - name: journal
+                mountPath: "/var/log/journal"
+                readOnly: true
+          configReloader:
+            resources:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                cpu: 50m
+                memory: 64Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: logging-and-monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
