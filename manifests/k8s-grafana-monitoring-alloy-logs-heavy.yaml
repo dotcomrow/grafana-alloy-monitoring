@@ -716,6 +716,8 @@ spec:
         alloy-logs:
           enabled: true
           controller:
+            extraAnnotations:
+              platform.suncoast.systems/vpa-exclude: "true"
             podAnnotations:
               reloader.stakater.com/auto: 'true'
             resources: {}

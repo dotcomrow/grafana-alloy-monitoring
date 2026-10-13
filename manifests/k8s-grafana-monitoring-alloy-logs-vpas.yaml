@@ -1,0 +1,93 @@
+# CPU-only workload-specific VPAs for the three Alloy log collector groups.
+# The target DaemonSets opt out of the generic Kyverno-generated VPA through
+# platform.suncoast.systems/vpa-exclude and retain automatic CPU request sizing.
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: goldilocks-grafana-k8s-monitoring-alloy-logs
+  namespace: logging-and-monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+  labels:
+    app.kubernetes.io/managed-by: manifest
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: grafana-k8s-monitoring-alloy-logs
+  updatePolicy:
+    updateMode: InPlaceOrRecreate
+    minReplicas: 1
+  resourcePolicy:
+    containerPolicies:
+      - containerName: config-reloader
+        mode: "Off"
+      - containerName: alloy
+        controlledResources:
+          - cpu
+        controlledValues: RequestsOnly
+        minAllowed:
+          cpu: 25m
+        maxAllowed:
+          cpu: 750m
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: goldilocks-grafana-k8s-monitoring-alloy-logs-heavy
+  namespace: logging-and-monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+  labels:
+    app.kubernetes.io/managed-by: manifest
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: grafana-k8s-monitoring-alloy-logs-heavy
+  updatePolicy:
+    updateMode: InPlaceOrRecreate
+    minReplicas: 1
+  resourcePolicy:
+    containerPolicies:
+      - containerName: config-reloader
+        mode: "Off"
+      - containerName: alloy
+        controlledResources:
+          - cpu
+        controlledValues: RequestsOnly
+        minAllowed:
+          cpu: 25m
+        maxAllowed:
+          cpu: 500m
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: goldilocks-grafana-k8s-monitoring-alloy-logs-srvr
+  namespace: logging-and-monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+  labels:
+    app.kubernetes.io/managed-by: manifest
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: grafana-k8s-monitoring-alloy-logs-srvr
+  updatePolicy:
+    updateMode: InPlaceOrRecreate
+    minReplicas: 1
+  resourcePolicy:
+    containerPolicies:
+      - containerName: config-reloader
+        mode: "Off"
+      - containerName: alloy
+        controlledResources:
+          - cpu
+        controlledValues: RequestsOnly
+        minAllowed:
+          cpu: 25m
+        maxAllowed:
+          cpu: "4"
