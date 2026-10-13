@@ -733,6 +733,7 @@ spec:
                           operator: NotIn
                           values:
                             - work-node-l4-gpu
+                            - srvr-node
             resources: {}
             remoteConfig:
               enabled: false
